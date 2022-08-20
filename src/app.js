@@ -11,6 +11,11 @@ app.use(express.json());
 app.use(FBrouter);
 app.use(MGrouter);
 
+
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
+
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];

@@ -15,7 +15,7 @@ const innerLog = new Schema(
 const matrixesData = new Schema(
   {
     matrixID: String,
-    UserID: { type: String, required: true },
+    userID: { type: String, required: true },
     matrixesData: [String],
     counter: { type: Number, default: 0 },
     innerLog: [innerLog],
@@ -64,27 +64,21 @@ const UserData = new Schema({
   CompanyUTR: String,
 });
 
-const SubUser = new Schema(
-  {
-    isActive: { type: Boolean, default: true },
-    Name: { type: String, required: true },
-    Mail: { type: String, required: true },
-  },
-  { timestamps: true }
-);
+
+//Account
 const users = new Schema(
   {
-    FirstName: { type: String, required: true },
-    LastName: { type: String, required: true },
+    FirstName: String,
+    LastName: String,
     Phone: String,
     Mail: { type: String, required: true },
     PlanKey: String,
     userPassword: { type: String, required: true },
-    Accountname: { type: String, required: true },
-    isAdmin: { type: Boolean, default:true },
+    Accountname: String,
+    isAdmin: { type: Boolean, required: true },
+    AdminUserID: String,
     isAuthenticated: { type: Boolean, default: false },
     otherDetails: UserData,
-    subUsers: [SubUser],
   },
   { timestamps: true }
 );
@@ -168,6 +162,7 @@ const pMtx = new Schema({
 const config = new Schema(
   {
     userID: { type: String, required: true },
+
     DefaultDriver: driver,
     DocumentDef: docDef,
     PremissionMtx: pMtx,
@@ -175,6 +170,23 @@ const config = new Schema(
   { timestamps: true }
 );
 
+// validate name
+// validate userID
+const reportConfig = new Schema({
+ 
+});
+const erpConfig = new Schema({
+  erpName: "",
+  userID: { type: String, required: true },
+  WizcloudApiPrivateKey: String,
+  WizcloudApiServer: String,
+  WizcloudApiDBName: String,
+  RivhitUserName: String,
+  RivhitIdentifier: String,
+  RivhitTaxNumber:String,
+  reportsConfig:[reportConfig]
+
+});
 // **********************************************************************************/
 
 mongoose.model;
@@ -184,12 +196,11 @@ const Users = mongoose.model("Users", users);
 const Plans = mongoose.model("Plans", plans);
 //const Keys = mongoose.model("Plans", keys);
 const Config = mongoose.model("Config", config);
-
+const ErpConfig = mongoose.model("ErpCofig", erpConfig);
 module.exports.DocData = DocData;
 module.exports.MtxLog = MtxLog;
 module.exports.Users = Users;
 module.exports.Plans = Plans;
 //module.exports.Keys = Keys;
 module.exports.Config = Config;
-
-
+module.exports.ErpConfig = ErpConfig;

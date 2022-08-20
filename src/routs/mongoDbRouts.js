@@ -118,22 +118,27 @@ MGrouter.post("/api/handleLogin", async (req, res) => {
 
 MGrouter.post("/api/setConfig", async (req, res) => {
   let configObj = await req.body;
-
-  let lengthOfData;
-  try {
-    lengthOfData = await Users.find({ _id: configObj.userID });
-  } catch (e) {
-    console.log(e);
-    return res.send(e);
-  }
-  console.log(lengthOfData);
-  if (!configObj || lengthOfData == 0)
-    res.send({ status: "no", data: "no user in data base" });
+  let validate_data = await Helper.VALIDATE_REQUEST_INPUT( configObj, 0);
+ 
+  if(!validate_data.status) return res.send({status:"no",data:validate_data.data})
   Helper.setConfig(configObj)
     .then((searchResult) => {
-      console.log("seracadfasf", searchResult);
+      console.log("searchResult in setConfig ~~~~ ", searchResult);
       return res.send(searchResult);
     })
-    .catch((e) => console.log("bad format"));
+    .catch((e) => res.send(e));
+});
+
+MGrouter.post("/api/setErpConfig", async (req, res) => {
+  let configObj = await req.body;
+  let validate_data = await Helper.VALIDATE_REQUEST_INPUT( configObj, 1 );
+ 
+  if(!validate_data.status) return res.send({status:"no",data:validate_data.data})
+  Helper.setConfig(configObj)
+    .then((searchResult) => {
+      console.log("searchResult in setErpConfig ~~~~ ", searchResult);
+      return res.send(searchResult);
+    })
+    .catch((e) => res.send(e));
 });
 module.exports = MGrouter;

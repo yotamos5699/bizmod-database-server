@@ -6,7 +6,8 @@ const {
   DocData,
   Users,
 } = require("../DBs/dbObjects/MGschemas");
-
+const list_of_tables = ['Users','Config','ErpConfig','MtxLog']
+const column_name_list = ['_id','userID','userID','userID']
 const mockConfig = {
   userID: { type: String, required: true },
   DefaultDriver: {
@@ -58,6 +59,27 @@ const setConfig = async (userData) => {
     });
 };
 
+const VALIDATE_REQUEST_INPUT = async ( configObj, testNum) => {
+ 
+  let data = "";
+  let lengthOfData;
+  //let column_name = column_name_list[testNum]
+  try {
+    lengthOfData = await eval(list_of_tables[testNum]).find({ [column_name_list[testNum]]: configObj.userID });
+  } catch (e) {
+    console.log(e);
+    return res.send(e);
+  }
+  if (lengthOfData != 1)
+    data += `u got ${lengthOfData} users in dataBase ecpected 1\n`;
+  if (!configObj)
+    data += `problem with value of configObj u got ${configObj} expected Object`;
+  if (data != "") return { status: false, data: "no user in data base" };
+  
+  else return { status: true };
+};
+
+module.exports.VALIDATE_REQUEST_INPUT = VALIDATE_REQUEST_INPUT;
 module.exports.setConfig = setConfig;
 module.exports.getData = getData;
 module.exports.mockConfig = mockConfig;
