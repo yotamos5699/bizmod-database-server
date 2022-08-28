@@ -26,13 +26,20 @@ mongoose
 
 MGrouter.post("/api/loadmatrixes", async (req, res) => {
   let id = await req.body.userID;
-  let body = await req.body;
+  let reqAmount = await req.body.amount;
+  let amount = reqAmount ? reqAmount : 1;
+
+  console.log("amount !!!", amount);
   console.table({ id });
   MtxLog.find({ userID: id })
     .sort({ _id: -1 })
     .then((result) => {
       console.log(result);
-      res.send({ status: "yes", data: result });
+      console.log("result.length ssss", result.length);
+      res.send({
+        status: "yes",
+        data: result.splice(0, result.length > amount ? amount : result.length),
+      });
     })
     .catch((e) => {
       console.log(e);
