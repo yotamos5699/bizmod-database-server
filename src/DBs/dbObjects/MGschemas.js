@@ -64,7 +64,6 @@ const UserData = new Schema({
   CompanyUTR: String,
 });
 
-
 //Account
 const users = new Schema(
   {
@@ -75,7 +74,7 @@ const users = new Schema(
     PlanKey: String,
     userPassword: { type: String, required: true },
     Accountname: String,
-    isAdmin: { type: Boolean, required: true },
+    isAdmin: { type: Boolean, required: true, default: true },
     AdminUserID: String,
     isAuthenticated: { type: Boolean, default: false },
     otherDetails: UserData,
@@ -172,9 +171,7 @@ const config = new Schema(
 
 // validate name
 // validate userID
-const reportConfig = new Schema({
- 
-});
+const reportConfig = new Schema({});
 const erpConfig = new Schema({
   erpName: "",
   userID: { type: String, required: true },
@@ -183,9 +180,8 @@ const erpConfig = new Schema({
   WizcloudApiDBName: String,
   RivhitUserName: String,
   RivhitIdentifier: String,
-  RivhitTaxNumber:String,
-  reportsConfig:[reportConfig]
-
+  RivhitTaxNumber: String,
+  reportsConfig: [reportConfig],
 });
 // **********************************************************************************/
 

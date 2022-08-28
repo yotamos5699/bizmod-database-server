@@ -1,7 +1,13 @@
 const express = require("express");
 const MGrouter = express.Router();
 const mongoose = require("mongoose");
-const { MtxLog, DocData, Users } = require("../DBs/dbObjects/MGschemas");
+const Validator = require("./validator");
+const {
+  MtxLog,
+  DocData,
+  Users,
+  ErpConfig,
+} = require("../DBs/dbObjects/MGschemas");
 const bodyParser = require("body-parser");
 require("dotenv").config();
 
@@ -19,10 +25,10 @@ mongoose
   .catch((e) => console.log(e));
 
 MGrouter.post("/api/loadmatrixes", async (req, res) => {
-  let id = await req.body.UserID;
+  let id = await req.body.userID;
   let body = await req.body;
   console.table({ id });
-  MtxLog.find({ UserID: id })
+  MtxLog.find({ userID: id })
     .sort({ _id: -1 })
     .then((result) => {
       console.log(result);
@@ -36,13 +42,13 @@ MGrouter.post("/api/loadmatrixes", async (req, res) => {
 
 MGrouter.post("/api/saveMatrix", async function (req, res) {
   let body = await req.body;
-  const { matrixID, UserID, matrixesData } = body;
-  let inDataBase = await Users.find({ _id: UserID });
+  const { matrixID, userID, matrixesData } = body;
+  let inDataBase = await Users.find({ _id: userID });
   if (inDataBase.length == 0)
     return res.send({ status: "no", data: "user id not found" });
   let reqMtxData = new MtxLog({
     matrixID: matrixID,
-    UserID: UserID,
+    userID: userID,
     matrixesData: matrixesData,
   });
 
@@ -117,11 +123,18 @@ MGrouter.post("/api/handleLogin", async (req, res) => {
 });
 
 MGrouter.post("/api/setConfig", async (req, res) => {
+  const actionHeader = req.headers["forcedaction"];
+  console.log("************** action header ********** ", actionHeader);
+
   let configObj = await req.body;
-  let validate_data = await Helper.VALIDATE_REQUEST_INPUT( configObj, 0);
- 
-  if(!validate_data.status) return res.send({status:"no",data:validate_data.data})
-  Helper.setConfig(configObj)
+  // console.log(configObj);
+  let validate_data = await Validator.VALIDATE_REQUEST_INPUT(configObj, 0);
+  console.log(validate_data.status);
+
+  if (validate_data.status == false)
+    return res.send({ status: "no", data: validate_data });
+
+  Helper.setConfig(configObj, 1, actionHeader)
     .then((searchResult) => {
       console.log("searchResult in setConfig ~~~~ ", searchResult);
       return res.send(searchResult);
@@ -130,13 +143,19 @@ MGrouter.post("/api/setConfig", async (req, res) => {
 });
 
 MGrouter.post("/api/setErpConfig", async (req, res) => {
+  const actionHeader = req.headers["forcedaction"];
+  console.log("************** action header ********** ", req.headers);
+
   let configObj = await req.body;
-  let validate_data = await Helper.VALIDATE_REQUEST_INPUT( configObj, 1 );
- 
-  if(!validate_data.status) return res.send({status:"no",data:validate_data.data})
-  Helper.setConfig(configObj)
+  console.log(configObj);
+  let validate_data = await Validator.VALIDATE_REQUEST_INPUT(configObj, 0);
+  console.log("after validetion ###", validate_data);
+  if (!validate_data.status)
+    return res.send({ status: "no", data: validate_data.data });
+
+  Helper.setConfig(configObj, 1, actionHeader)
     .then((searchResult) => {
-      console.log("searchResult in setErpConfig ~~~~ ", searchResult);
+      console.log("searchResult in setConfig ~~~~ ", searchResult);
       return res.send(searchResult);
     })
     .catch((e) => res.send(e));

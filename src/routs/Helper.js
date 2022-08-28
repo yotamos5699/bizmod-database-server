@@ -1,13 +1,16 @@
 const { async } = require("@firebase/util");
+const Validator = require("./validator");
 const mongoose = require("mongoose");
 const {
   Config,
   MtxLog,
   DocData,
   Users,
+  ErpConfig,
 } = require("../DBs/dbObjects/MGschemas");
-const list_of_tables = ['Users','Config','ErpConfig','MtxLog']
-const column_name_list = ['_id','userID','userID','userID']
+
+const list_of_tables = ["Users", "Config", "ErpConfig", "MtxLog"];
+const column_name_list = ["_id", "userID", "userID", "userID"];
 const mockConfig = {
   userID: { type: String, required: true },
   DefaultDriver: {
@@ -38,7 +41,6 @@ const getData = async (collection, searchParams) => {
   return eval(collection)
     .find(searchParams)
     .then((result) => {
-      console.log(result);
       return { status: result.length > 0 ? "yes" : "no", data: result };
     })
     .catch((e) => {
@@ -47,39 +49,68 @@ const getData = async (collection, searchParams) => {
     });
 };
 
-const setConfig = async (userData) => {
-  let NEW_USER_SETTING = new Config(userData);
-  return NEW_USER_SETTING.save()
+const saveRecord = async (NEW_RECORD_DATA, id, tableName, action) => {
+  console.log("********** saveConfig **********");
+  return NEW_RECORD_DATA.save()
     .then((result) => {
-      return { status: "yes", data: result };
+      console.log("result in save !!!!", result);
+      return { status: "yes", action: action, data: result };
     })
     .catch((e) => {
       console.log(e);
-      return { status: "no", data: e };
+      return { status: "no", action: action, data: e };
     });
 };
 
-const VALIDATE_REQUEST_INPUT = async ( configObj, testNum) => {
- 
-  let data = "";
-  let lengthOfData;
-  //let column_name = column_name_list[testNum]
+const updateRecord = async (NEW_RECORD_DATA, id, tableName, action) => {
+  console.log("************** update config **************");
+  let result;
   try {
-    lengthOfData = await eval(list_of_tables[testNum]).find({ [column_name_list[testNum]]: configObj.userID });
+    await deleteRecord(NEW_RECORD_DATA, id, tableName, action);
+    result = await saveRecord(NEW_RECORD_DATA, id, tableName, action);
   } catch (e) {
     console.log(e);
-    return res.send(e);
+    return { status: "no", data: e };
   }
-  if (lengthOfData != 1)
-    data += `u got ${lengthOfData} users in dataBase ecpected 1\n`;
-  if (!configObj)
-    data += `problem with value of configObj u got ${configObj} expected Object`;
-  if (data != "") return { status: false, data: "no user in data base" };
-  
-  else return { status: true };
+  return { status: "yes", action: action, data: result };
 };
 
-module.exports.VALIDATE_REQUEST_INPUT = VALIDATE_REQUEST_INPUT;
+const deleteRecord = async (NEW_RECORD_DATA, id, tableName, action) => {
+  console.log("************** delete config **************");
+  return tableName
+    .findOneAndRemove({ _id: id })
+    .then((result) => {
+      return { status: "yes", action: action, data: result };
+    })
+    .catch((e) => {
+      console.log(e);
+      return { status: "no", action: action, data: e };
+    });
+};
+
+const setConfig = async (userData, numOfTable, forceAction) => {
+  console.log("action header in set config ", forceAction);
+  const action_to_function_hash = {
+    update: updateRecord,
+    save: saveRecord,
+    delete: deleteRecord,
+  };
+
+  const tableName = eval(list_of_tables[numOfTable]);
+  const NEW_RECORD_DATA = new tableName(userData);
+  const VALIDATE_ACTION = await Validator.VALIDATE_REQUEST_INPUT(userData, 1);
+  console.log(VALIDATE_ACTION.action);
+  console.log("force action ", forceAction);
+  let action = forceAction != "null" ? forceAction : VALIDATE_ACTION.action;
+  console.log("action ,ssss", action);
+  return await eval(action_to_function_hash[action])(
+    NEW_RECORD_DATA,
+    VALIDATE_ACTION.id,
+    tableName,
+    action
+  );
+};
+
 module.exports.setConfig = setConfig;
 module.exports.getData = getData;
 module.exports.mockConfig = mockConfig;
