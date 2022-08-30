@@ -170,22 +170,36 @@ MGrouter.post("/api/setErpConfig", async (req, res) => {
 });
 
 MGrouter.post("/api/saveDocs", async (req, res) => {
-  const docsArrey = req.body;
+  const docsArrey = await req.body;
   console.log("************** doc arrey to db ********** ", docsArrey);
 
   const functionHash = { true: "insertMany", false: "save" };
-
-  const isArrey = docsArrey.isArray(docObj);
-
-  DocData.eval(functionHash[isArrey])(docsArrey)
-    .then((result) => {
-      console.log(result);
-      res.send({ status: "yes", data: result });
-    })
-    .catch((e) => {
-      console.log(e);
-      res.send({ status: "no", data: e });
-    });
+  if (!Array.isArray(docsArrey))
+    return res.send({ status: no, result: "not an array" });
+  const isBiggerThenOne = docsArrey.length > 1;
+  const data = new DocData(docsArrey[0]);
+  console.log("$$$$$$$$$$$$$ data $$$$$$$$$$$$", data);
+  //const selectedFunction = eval(functionHash[isBiggerThenOne]);
+  isBiggerThenOne
+    ? DocData.insertMany(docsArrey)
+        .then((result) => {
+          console.log(result);
+          res.send({ status: "yes", data: result });
+        })
+        .catch((e) => {
+          console.log(e);
+          res.send({ status: "no", data: e });
+        })
+    : data
+        .save()
+        .then((result) => {
+          console.log("!!!!!!!!!! result !!!!!!!!!!!", result);
+          res.send({ status: "yes", data: result });
+        })
+        .catch((e) => {
+          console.log(e);
+          res.send({ status: "no", data: e });
+        });
 });
 
 module.exports = MGrouter;
