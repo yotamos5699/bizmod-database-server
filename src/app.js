@@ -7,9 +7,17 @@ const app = express();
 const jwt = require("jsonwebtoken");
 const FBrouter = require("./routs/fireBaseRouts");
 const MGrouter = require("./routs/mongoDbRouts");
+const cors = require(`cors`);
 app.use(express.json());
+
+
 app.use(FBrouter);
 app.use(MGrouter);
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 
 
 app.get("/", (req, res) => {

@@ -29,7 +29,7 @@ MGrouter.post("/api/loadmatrixes", async (req, res) => {
   let reqAmount = await req.body.amount;
   let amount = reqAmount ? reqAmount : 1;
 
-  console.log("amount !!!", amount);
+  console.log("amount ", amount);
   console.table({ id });
   MtxLog.find({ userID: id })
     .sort({ _id: -1 })
@@ -37,7 +37,7 @@ MGrouter.post("/api/loadmatrixes", async (req, res) => {
       console.log(result);
       console.log("result.length ssss", result.length);
       res.send({
-        status: "yes",
+        status: result.length == 0 ? "no" : "yes",
         data: result.splice(0, result.length > amount ? amount : result.length),
       });
     })
@@ -53,6 +53,7 @@ MGrouter.post("/api/saveMatrix", async function (req, res) {
   let inDataBase = await Users.find({ _id: userID });
   if (inDataBase.length == 0)
     return res.send({ status: "no", data: "user id not found" });
+
   let reqMtxData = new MtxLog({
     matrixID: matrixID,
     userID: userID,
@@ -167,4 +168,24 @@ MGrouter.post("/api/setErpConfig", async (req, res) => {
     })
     .catch((e) => res.send(e));
 });
+
+MGrouter.post("/api/saveDocs", async (req, res) => {
+  const docsArrey = req.body;
+  console.log("************** doc arrey to db ********** ", docsArrey);
+
+  const functionHash = { true: "insertMany", false: "save" };
+
+  const isArrey = docsArrey.isArray(docObj);
+
+  DocData.eval(functionHash[isArrey])(docsArrey)
+    .then((result) => {
+      console.log(result);
+      res.send({ status: "yes", data: result });
+    })
+    .catch((e) => {
+      console.log(e);
+      res.send({ status: "no", data: e });
+    });
+});
+
 module.exports = MGrouter;
