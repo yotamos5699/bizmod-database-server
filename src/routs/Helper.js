@@ -1,6 +1,7 @@
 const { async } = require("@firebase/util");
 const Validator = require("./validator");
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
 const {
   Config,
   MtxLog,
@@ -12,7 +13,7 @@ const {
 const list_of_tables = ["Users", "Config", "ErpConfig", "MtxLog"];
 const column_name_list = ["_id", "userID", "userID", "userID"];
 const mockConfig = {
-  userID: { type: String, required: true },
+  usserID: { type: String, required: true },
   DefaultDriver: {
     isDefault: false,
     //   AccountKey: Number,
@@ -33,6 +34,35 @@ const mockConfig = {
     ObligoPass: { isAllow: false },
     FlagedCastumers: { isAllow: false },
   },
+};
+
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  console.log(token);
+  if (token == null) {
+    req.testMsg = {
+      status: 401,
+      msg: "***** in test mode ***** no token in header",
+    };
+    next();
+    return;
+  }
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+    if (err) {
+      req.testMsg = {
+        status: 403,
+        msg: "***** in test mode ***** no token in header",
+      };
+      console.log(user);
+      next();
+      return;
+    }
+    req.testMsg = { status: 200 };
+    req.user = user;
+    console.log("user@@@@@@@@", user);
+    next();
+  });
 };
 
 const getData = async (collection, searchParams) => {
@@ -114,7 +144,7 @@ const setConfig = async (userData, numOfTable, forceAction) => {
 module.exports.setConfig = setConfig;
 module.exports.getData = getData;
 module.exports.mockConfig = mockConfig;
-
+module.exports.authenticateToken = authenticateToken;
 // function hashUserKey(key) {
 //   const keysLocation = { MtxLog: "matrixID", Users: "userPassword" };
 //   let hashedKey = crypto.createHash("md5").update(key).digest("hex");

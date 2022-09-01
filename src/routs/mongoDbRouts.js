@@ -47,7 +47,7 @@ MGrouter.post("/api/loadmatrixes", async (req, res) => {
     });
 });
 
-MGrouter.post("/api/saveMatrix", async function (req, res) {
+MGrouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
   let body = await req.body;
   const { matrixID, userID, matrixesData } = body;
   let inDataBase = await Users.find({ _id: userID });
@@ -55,34 +55,79 @@ MGrouter.post("/api/saveMatrix", async function (req, res) {
     return res.send({ status: "no", data: "user id not found" });
 
   let reqMtxData = new MtxLog({
+    Date: new Date(),
     matrixID: matrixID,
     userID: userID,
     matrixesData: matrixesData,
   });
 
-  reqMtxData
-    .save()
-    .then((result) => {
-      console.log(result);
-      res.send({ status: "yes", data: result });
-    })
-    .catch((e) => {
-      console.log(e);
-      res.send({ status: "no", data: e });
-    });
+  const searchData = await MtxLog.find({ matrixID: matrixID });
+  console.log(searchData);
+  searchData.length == 0
+    ? reqMtxData
+        .save()
+        .then((result) => {
+          console.log(
+            "***************************** saving matrix data !!!! ******************************"
+          );
+          console.log(result);
+          res.send({ status: "yes", data: result });
+        })
+        .catch((e) => {
+          console.log(e);
+          res.send({ status: "no", data: e });
+        })
+    : MtxLog.updateOne(
+        { matrixID: matrixID },
+        {
+          $set: {
+            Date: new Date(),
+            matrixID: matrixID,
+            userID: userID,
+            matrixesData: matrixesData,
+            id: searchData[0]._id,
+          },
+        }
+      )
+        .then((result) => {
+          console.log(
+            "***************************** updating matrix data !!!! ******************************"
+          );
+          console.log(result);
+          res.send({ status: "yes", data: result });
+        })
+        .catch((e) => {
+          console.log(e);
+          res.send({ status: "no", data: e });
+        });
 });
 
-MGrouter.post("/api/loadDocUrls", async (req, res) => {
-  DocData.find()
-    .then((result) => {
-      console.log(result);
-      res.send({ status: "yes", data: result });
-    })
-    .catch((e) => {
-      console.log(e);
-      res.send({ status: "no", data: e });
-    });
-});
+MGrouter.post(
+  "/api/loadDocUrls",
+  Helper.authenticateToken,
+  async (req, res) => {
+    let userID;
+
+    try {
+      userID = await req.user.fetchedData.userID;
+    } catch (e) {
+      console.log("*******  no id in request *******");
+    }
+
+    //if(!userID) return res.send({ status: "no", data:'no user id' });
+
+    DocData.find({ userID: userID })
+      .exec()
+      .then((result) => {
+        // console.log(result);
+        res.send({ status: "yes", data: result });
+      })
+      .catch((e) => {
+        console.log(e);
+        res.send({ status: "no", data: e });
+      });
+  }
+);
 
 MGrouter.post("/api/register", async (req, res) => {
   let body = await req.body;
@@ -169,7 +214,7 @@ MGrouter.post("/api/setErpConfig", async (req, res) => {
     .catch((e) => res.send(e));
 });
 
-MGrouter.post("/api/saveDocs", async (req, res) => {
+MGrouter.post("/api/saveDocs", Helper.authenticateToken, async (req, res) => {
   const docsArrey = await req.body;
   console.log("************** doc arrey to db ********** ", docsArrey);
 

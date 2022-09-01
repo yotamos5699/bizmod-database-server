@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 
 const innerLog = new Schema(
   {
-    UserID: { type: String, required: true },
+    userID: { type: String, required: true },
   },
   {
     timestamps: true,
@@ -14,7 +14,9 @@ const innerLog = new Schema(
 
 const matrixesData = new Schema(
   {
+    Date: Date,
     matrixID: String,
+    martixName: String,
     userID: { type: String, required: true },
     matrixesData: [String],
     counter: { type: Number, default: 0 },
@@ -22,6 +24,8 @@ const matrixesData = new Schema(
   },
   {
     timestamps: true,
+    strict: true,
+    strictQuery: false,
   }
 );
 
@@ -39,6 +43,7 @@ const SigningStat = new Schema(
 
 const docsData = new Schema(
   {
+    userID: { type: String, required: true },
     DocumentIssuedStatus: String,
     ValueDate: String,
     DocumentDefID: Number,
@@ -54,7 +59,7 @@ const docsData = new Schema(
     Action: Number,
     SigStat: SigningStat,
   },
-  { timestamps: true }
+  { timestamps: true, strict: true, strictQuery: false }
 );
 
 // ************************************* users Schema ******************************** ////
@@ -79,7 +84,7 @@ const users = new Schema(
     isAuthenticated: { type: Boolean, default: false },
     otherDetails: UserData,
   },
-  { timestamps: true }
+  { timestamps: true, strict: true, strictQuery: false }
 );
 
 //********************************************* PLANS **************************************/
@@ -118,7 +123,7 @@ const plans = new Schema(
 const enteri = new Schema(
   {
     MetaData: String,
-    HashedUserID: { type: String },
+    userID: { type: String },
   },
   { timestamps: true }
 );
@@ -129,7 +134,7 @@ const keys = new Schema(
     isAdmin: { type: Boolean, required: true },
     adminID: String,
     HashedUserKey: { type: String, required: true },
-    HashedUserID: { type: String, required: true },
+    userID: { type: String, required: true },
     LogedEntries: [enteri],
   },
   { timestamps: true }
@@ -166,23 +171,26 @@ const config = new Schema(
     DocumentDef: docDef,
     PremissionMtx: pMtx,
   },
-  { timestamps: true }
+  { timestamps: true, strict: true, strictQuery: false }
 );
 
 // validate name
 // validate userID
 const reportConfig = new Schema({});
-const erpConfig = new Schema({
-  erpName: "",
-  userID: { type: String, required: true },
-  WizcloudApiPrivateKey: String,
-  WizcloudApiServer: String,
-  WizcloudApiDBName: String,
-  RivhitUserName: String,
-  RivhitIdentifier: String,
-  RivhitTaxNumber: String,
-  reportsConfig: [reportConfig],
-});
+const erpConfig = new Schema(
+  {
+    erpName: "",
+    userID: { type: String, required: true },
+    WizcloudApiPrivateKey: String,
+    WizcloudApiServer: String,
+    WizcloudApiDBName: String,
+    RivhitUserName: String,
+    RivhitIdentifier: String,
+    RivhitTaxNumber: String,
+    reportsConfig: [reportConfig],
+  },
+  { timestamps: true, strict: true, strictQuery: false }
+);
 // **********************************************************************************/
 
 mongoose.model;
