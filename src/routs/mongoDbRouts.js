@@ -49,22 +49,31 @@ MGrouter.post("/api/loadmatrixes", async (req, res) => {
 
 MGrouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
   let body = await req.body;
+  console.log("body in save matrix !!!", body);
   const { matrixID, userID, matrixesData } = body;
-  let inDataBase = await Users.find({ _id: userID });
+
+  let inDataBase;
+  try {
+    inDataBase = await Users.find({ _id: userID });
+  } catch (e) {
+    console.log(e);
+    return res.send({ status: "no", data: e });
+  }
   if (inDataBase.length == 0)
     return res.send({ status: "no", data: "user id not found" });
 
-  let reqMtxData = new MtxLog({
-    Date: new Date(),
+  let reqMtxData = {
+    Date: body.Date ? body.Date : new Date(),
+    martixName: body.martixName ? body.martixName : matrixID,
     matrixID: matrixID,
     userID: userID,
     matrixesData: matrixesData,
-  });
+  };
 
   const searchData = await MtxLog.find({ matrixID: matrixID });
   console.log(searchData);
   searchData.length == 0
-    ? reqMtxData
+    ? new MtxLog(reqMtxData)
         .save()
         .then((result) => {
           console.log(
@@ -80,13 +89,7 @@ MGrouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
     : MtxLog.updateOne(
         { matrixID: matrixID },
         {
-          $set: {
-            Date: new Date(),
-            matrixID: matrixID,
-            userID: userID,
-            matrixesData: matrixesData,
-            id: searchData[0]._id,
-          },
+          $set: { ...reqMtxData, id: searchData[0]._id },
         }
       )
         .then((result) => {
