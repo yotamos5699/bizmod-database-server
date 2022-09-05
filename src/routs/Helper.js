@@ -8,6 +8,7 @@ const {
   DocData,
   Users,
   ErpConfig,
+  BiRows,
 } = require("../DBs/dbObjects/MGschemas");
 
 const list_of_tables = ["Users", "Config", "ErpConfig", "MtxLog"];

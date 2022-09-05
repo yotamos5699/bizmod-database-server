@@ -16,7 +16,7 @@ const matrixesData = new Schema(
   {
     Date: Date,
     matrixID: String,
-    martixName: String,
+    matrixName: String,
     userID: { type: String, required: true },
     matrixesData: String,
     isBI: Boolean,
@@ -63,6 +63,16 @@ const docsData = new Schema(
   { timestamps: true, strict: true, strictQuery: false }
 );
 
+const biRows = new Schema(
+  {
+    Date: Date,
+    AccountKey: String,
+    DocumentID: Number,
+    itemKey: String,
+    Quantity: Number,
+  },
+  { timestamps: true, strict: true, strictQuery: false }
+);
 // ************************************* users Schema ******************************** ////
 
 const UserData = new Schema({
@@ -199,9 +209,12 @@ const DocData = mongoose.model("DocDataLog", docsData);
 const MtxLog = mongoose.model("MtxLog", matrixesData);
 const Users = mongoose.model("Users", users);
 const Plans = mongoose.model("Plans", plans);
+const BiRows = mongoose.model("BiRows", biRows);
 //const Keys = mongoose.model("Plans", keys);
 const Config = mongoose.model("Config", config);
 const ErpConfig = mongoose.model("ErpCofig", erpConfig);
+
+module.exports.BiRows = BiRows;
 module.exports.DocData = DocData;
 module.exports.MtxLog = MtxLog;
 module.exports.Users = Users;

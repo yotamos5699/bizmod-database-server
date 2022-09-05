@@ -7,6 +7,7 @@ const {
   DocData,
   Users,
   ErpConfig,
+  BiRows,
 } = require("../DBs/dbObjects/MGschemas");
 const bodyParser = require("body-parser");
 require("dotenv").config();
@@ -65,7 +66,7 @@ MGrouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
 
   let reqMtxData = {
     Date: body.Date ? body.Date : new Date(),
-    martixName: body.martixName ? body.martixName : matrixID,
+    matrixName: body.martixName ? body.martixName : matrixID,
     matrixID: matrixID,
     userID: userID,
     isBI: body.isBI ? body.isBI : false,
@@ -107,7 +108,56 @@ MGrouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
           console.log(e);
           res.send({ status: "no", data: e });
         });
+
+  if (reqMtxData.isBI) saveDataForBi(reqMtxData);
 });
+
+const saveDataForBi = (reqMtxData) => {
+  let biData = [];
+  let dataRow = {};
+  let data = JSON.parse(reqMtxData.matrixesData);
+
+  console.log("data !!!! ", data);
+  data.mainMatrix.cellsData.forEach((row, rowIndex) => {
+    row.forEach((cell) => {
+      console.log("cell ", cell);
+      dataRow = {
+        Date: reqMtxData.Date,
+        AccountKey: data.mainMatrix.AccountKey[rowIndex],
+        DocumentID: data.mainMatrix.DocumentID[rowIndex],
+        itemKey: data.mainMatrix.itemsHeaders[rowIndex],
+        Quantity: cell,
+      };
+      biData.push(dataRow);
+      dataRow = {};
+    });
+  });
+
+  console.log("bi before send ", biData);
+
+  let rows = new BiRows(biData);
+
+  biData.length > 1
+    ? BiRows.insertMany(biData)
+        .then((result) => {
+          console.log("BiData !!!!!!!", result);
+          return { status: "yes", data: result };
+        })
+        .catch((e) => {
+          console.log(e);
+          return { status: "no", data: e };
+        })
+    : rows
+        .save()
+        .then((result) => {
+          console.log("!!!!!!!!!! result !!!!!!!!!!!", result);
+          return { status: "yes", data: result };
+        })
+        .catch((e) => {
+          console.log(e);
+          return { status: "no", data: e };
+        });
+};
 
 MGrouter.post(
   "/api/loadDocUrls",
