@@ -52,6 +52,7 @@ MGrouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
   console.log("body in save matrix !!!", body);
   const { matrixID, userID, matrixesData } = body;
 
+  let pulledMatrixData = matrixesData?.matrixesData;
   let inDataBase;
   try {
     inDataBase = await Users.find({ _id: userID });
@@ -67,7 +68,10 @@ MGrouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
     martixName: body.martixName ? body.martixName : matrixID,
     matrixID: matrixID,
     userID: userID,
-    matrixesData: matrixesData,
+    isBI: body.isBI ? body.isBI : false,
+    matrixesData: JSON.stringify(
+      pulledMatrixData ? pulledMatrixData : matrixesData
+    ),
   };
 
   const searchData = await MtxLog.find({ matrixID: matrixID });
