@@ -11,7 +11,7 @@ const {
   BiRows,
 } = require("../DBs/dbObjects/MGschemas");
 
-const list_of_tables = ["Users", "Config", "ErpConfig", "MtxLog"];
+const list_of_tables = ["Users", "Config", "ErpConfig", "MtxLog", "BiRows"];
 const column_name_list = ["_id", "userID", "userID", "userID"];
 const mockConfig = {
   usserID: { type: String, required: true },
@@ -106,11 +106,14 @@ const updateRecord = async (NEW_RECORD_DATA, id, tableName, action) => {
   return { status: "yes", action: action, data: result };
 };
 
-const deleteRecord = async (NEW_RECORD_DATA, id, tableName, action) => {
+const deleteRecord = async (NEW_RECORD_DATA, id, table, action) => {
   console.log("************** delete config **************");
+  let tableName = table == 4 ? eval(list_of_tables[table]) : table;
+  console.log("table name $$$$$$$$$$$$$$$", tableName);
   return tableName
     .findOneAndRemove({ _id: id })
     .then((result) => {
+      console.log(result);
       return { status: "yes", action: action, data: result };
     })
     .catch((e) => {
@@ -141,7 +144,7 @@ const setConfig = async (userData, numOfTable, forceAction) => {
     action
   );
 };
-
+module.exports.deleteRecord = deleteRecord;
 module.exports.setConfig = setConfig;
 module.exports.getData = getData;
 module.exports.mockConfig = mockConfig;

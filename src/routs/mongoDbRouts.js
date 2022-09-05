@@ -232,6 +232,31 @@ MGrouter.post("/api/handleLogin", async (req, res) => {
     });
 });
 
+MGrouter.post("/api/deleteData", async (req, res) => {
+  const TBhash = {
+    Users: 0,
+    Config: 1,
+    ErpConfig: 2,
+    MtxLog: 3,
+    BiRows: 4,
+  };
+  let { collection, rowID } = await req.body;
+  let searchResult = await Helper.deleteRecord(
+    null,
+    rowID,
+    TBhash[collection],
+    null
+  );
+
+  if (searchResult.status == "no")
+    return res.send({ ststus: "no", data: "no record in data base" });
+  else
+    return res.send({
+      status: "yes",
+      // configObj: Helper.mockConfig,
+      userID: searchResult,
+    });
+});
 MGrouter.post("/api/setConfig", async (req, res) => {
   const actionHeader = req.headers["forcedaction"];
   console.log("************** action header ********** ", actionHeader);
