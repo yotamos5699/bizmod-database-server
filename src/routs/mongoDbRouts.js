@@ -2,6 +2,12 @@ const express = require("express");
 const MGrouter = express.Router();
 const mongoose = require("mongoose");
 const Validator = require("./validator");
+const cors = require("cors");
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 const {
   MtxLog,
   DocData,
