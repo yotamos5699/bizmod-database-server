@@ -19,6 +19,7 @@ const matrixesData = new Schema(
     matrixName: String,
     userID: { type: String, required: true },
     matrixesData: String,
+    matrixesUiData: [String],
     isBI: Boolean,
     counter: { type: Number, default: 0 },
     innerLog: [innerLog],
