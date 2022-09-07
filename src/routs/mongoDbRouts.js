@@ -79,6 +79,9 @@ MGrouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
     matrixesData: JSON.stringify(
       pulledMatrixData ? pulledMatrixData : matrixesData
     ),
+    matrixesUiData: JSON.stringify(
+      body.matrixesUiData ? body.matrixesUiData : null
+    ),
   };
 
   const searchData = await MtxLog.find({ matrixID: matrixID });
