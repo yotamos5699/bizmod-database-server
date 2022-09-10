@@ -1,4 +1,4 @@
-// **************** DB SERVER *********
+// **************** DB SERVER ****^^*****
 
 const PORT = process.env.PORT || 5000;
 require("dotenv").config();
