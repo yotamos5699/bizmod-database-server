@@ -14,6 +14,7 @@ const {
   Users,
   ErpConfig,
   BiRows,
+  StoredReports,
 } = require("../DBs/dbObjects/MGschemas");
 const bodyParser = require("body-parser");
 require("dotenv").config();
@@ -118,15 +119,26 @@ MGrouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
           res.send({ status: "no", data: e });
         });
 
-  if (reqMtxData.isBI) saveDataForBi(reqMtxData);
+  if (reqMtxData.isBI) saveDataForBi(reqMtxData, userID);
 });
 
-const saveDataForBi = (reqMtxData) => {
+const saveDataForBi = async (reqMtxData, userID) => {
+  const reportID = JSON.stringify({
+    TID: "1",
+  });
+
+  // const reportData = await StoredReports.find({ ID: reportID, userID:userID });
+  // console.log(
+  //   `report data ^^^^^ \n ${JSON.stringify(
+  //     Object.keys(reportData[0]._doc.Report.jsondata)
+  //   )}`
+  // );
+
   let biData = [];
   let dataRow = {};
   let data = JSON.parse(reqMtxData.matrixesData);
 
-  console.log("data !!!! ", data);
+  //  console.log("data !!!! ", data);
   data.mainMatrix.cellsData.forEach((row, rowIndex) => {
     row.forEach((cell) => {
       console.log("cell ", cell);
@@ -142,14 +154,14 @@ const saveDataForBi = (reqMtxData) => {
     });
   });
 
-  console.log("bi before send ", biData);
+  // console.log("bi before send ", biData);
 
   let rows = new BiRows(biData);
 
   biData.length > 1
     ? BiRows.insertMany(biData)
         .then((result) => {
-          console.log("BiData !!!!!!!", result);
+          //  console.log("BiData !!!!!!!", result);
           return { status: "yes", data: result };
         })
         .catch((e) => {
@@ -159,11 +171,11 @@ const saveDataForBi = (reqMtxData) => {
     : rows
         .save()
         .then((result) => {
-          console.log("!!!!!!!!!! result !!!!!!!!!!!", result);
+          //  console.log("!!!!!!!!!! result !!!!!!!!!!!", result);
           return { status: "yes", data: result };
         })
         .catch((e) => {
-          console.log(e);
+          //   console.log(e);
           return { status: "no", data: e };
         });
 };
@@ -219,10 +231,24 @@ MGrouter.post("/api/register", async (req, res) => {
     });
 });
 
-MGrouter.post("/api/getdata", async (req, res) => {
+MGrouter.post("/api/getdata", Helper.authenticateToken, async (req, res) => {
   let { collection, searchParams } = await req.body;
+  let userID;
+  let user = await req.user;
+
+  console.log("user @#@@@@@@@@@@@@@@ ", user);
+
+  try {
+    userID = user.fetchedData?.userID ? user.fetchedData.userID : user.userID;
+  } catch (e) {
+    console.log("*******  no id in request *******");
+  }
+
   if (!collection || !searchParams)
     return res.send({ status: "no", data: "error in search params" });
+
+  searchParams.userID = userID;
+  console.log("user id $$$$$$$$$$$$$$$$$$$", userID);
   let searchResult = await Helper.getData(collection, searchParams);
   return res.send(searchResult);
 });

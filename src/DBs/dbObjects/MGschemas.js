@@ -70,6 +70,7 @@ const biRows = new Schema(
     AccountKey: String,
     DocumentID: Number,
     itemKey: String,
+    itemName: String,
     Quantity: Number,
   },
   { timestamps: true, strict: true, strictQuery: false }
@@ -204,8 +205,17 @@ const erpConfig = new Schema(
   { timestamps: true, strict: true, strictQuery: false }
 );
 // **********************************************************************************/
+const storedReports = new mongoose.Schema(
+  {
+    userID: String,
+    Date: Date,
+    ID: String,
+    Report: Object,
+  },
+  { timestamps: true, strict: true, strictQuery: false }
+);
 
-mongoose.model;
+const StoredReports = mongoose.model("StoredReports", storedReports);
 const DocData = mongoose.model("DocDataLog", docsData);
 const MtxLog = mongoose.model("MtxLog", matrixesData);
 const Users = mongoose.model("Users", users);
@@ -220,6 +230,6 @@ module.exports.DocData = DocData;
 module.exports.MtxLog = MtxLog;
 module.exports.Users = Users;
 module.exports.Plans = Plans;
-//module.exports.Keys = Keys;
+module.exports.StoredReports = StoredReports;
 module.exports.Config = Config;
 module.exports.ErpConfig = ErpConfig;
