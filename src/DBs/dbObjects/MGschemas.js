@@ -156,6 +156,20 @@ const keys = new Schema(
 //************************************** Config ^*************************************//
 /*          FOR NEW USERS IN TRIELS AND SUB ADMIN USER FOR PAYED PLAN                 */
 /*          VIA IF <USER PLAN> != TRIEL      */
+
+const erpConfig = new Schema(
+  {
+    erpName: { type: String, required: true },
+    userID: { type: String, required: true },
+    CompanyKey: String,
+    CompanyServer: String,
+    CompanyDbName: String,
+    CompanyPassword: String,
+    CompanyUserName: String,
+    CompanyNumber: String,
+  },
+  { timestamps: true, strict: true, strictQuery: false }
+);
 const driver = new Schema({
   isDefault: { type: Boolean, default: false },
   AccountKey: Number,
@@ -179,31 +193,18 @@ const pMtx = new Schema({
 const config = new Schema(
   {
     userID: { type: String, required: true },
-
+    AccountState: String,
     DefaultDriver: driver,
     DocumentDef: docDef,
     PremissionMtx: pMtx,
+    ErpConfig: erpConfig,
   },
   { timestamps: true, strict: true, strictQuery: false }
 );
 
 // validate name
 // validate userID
-const reportConfig = new Schema({});
-const erpConfig = new Schema(
-  {
-    erpName: "",
-    userID: { type: String, required: true },
-    WizcloudApiPrivateKey: String,
-    WizcloudApiServer: String,
-    WizcloudApiDBName: String,
-    RivhitUserName: String,
-    RivhitIdentifier: String,
-    RivhitTaxNumber: String,
-    reportsConfig: [reportConfig],
-  },
-  { timestamps: true, strict: true, strictQuery: false }
-);
+
 // **********************************************************************************/
 const storedReports = new mongoose.Schema(
   {

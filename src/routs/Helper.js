@@ -70,9 +70,11 @@ const authenticateToken = (req, res, next) => {
 const getData = async (collection, searchParams) => {
   console.log("in get data !!!!", { collection, searchParams });
 
-  return eval(collection)
+  const tableName = await eval(collection);
+  return tableName
     .find(searchParams)
     .then((result) => {
+      console.log({ result });
       return { status: result.length > 0 ? "yes" : "no", data: result };
     })
     .catch((e) => {
@@ -83,7 +85,9 @@ const getData = async (collection, searchParams) => {
 
 const saveRecord = async (NEW_RECORD_DATA, id, tableName, action) => {
   console.log("********** saveConfig **********");
-  return NEW_RECORD_DATA.save()
+  let NEW_RECORD = new tableName(NEW_RECORD_DATA);
+
+  return NEW_RECORD.save()
     .then((result) => {
       console.log("result in save !!!!", result);
       return { status: "yes", action: action, data: result };
@@ -94,25 +98,35 @@ const saveRecord = async (NEW_RECORD_DATA, id, tableName, action) => {
     });
 };
 
-const updateRecord = async (NEW_RECORD_DATA, id, tableName, action) => {
+const updateRecord = async (NEW_RECORD_DATA, reportData, tableName, action) => {
   console.log("************** update config **************");
-  let result;
-  try {
-    await deleteRecord(NEW_RECORD_DATA, id, tableName, action);
-    result = await saveRecord(NEW_RECORD_DATA, id, tableName, action);
-  } catch (e) {
-    console.log(e);
-    return { status: "no", data: e };
-  }
-  return { status: "yes", action: action, data: result };
+
+  tableName
+    .updateOne(
+      { userID: reportData.data.userID },
+      {
+        $set: { ...reportData.data, NEW_RECORD_DATA },
+      }
+    )
+    .then((result) => {
+      console.log(
+        "***************************** updating matrix data !!!! ******************************"
+      );
+      console.log(result);
+      res.send({ status: "yes", data: result });
+    })
+    .catch((e) => {
+      console.log(e);
+      res.send({ status: "no", data: e });
+    });
 };
 
-const deleteRecord = async (NEW_RECORD_DATA, id, table, action) => {
+const deleteRecord = async (NEW_RECORD_DATA, userData, table, action) => {
   console.log("************** delete config **************");
   let tableName = table == 4 ? eval(list_of_tables[table]) : table;
   console.log("table name $$$$$$$$$$$$$$$", tableName);
   return tableName
-    .findOneAndRemove({ _id: id })
+    .findOneAndRemove({ _id: userData.id })
     .then((result) => {
       console.log(result);
       return { status: "yes", action: action, data: result };
@@ -132,15 +146,13 @@ const setConfig = async (userData, numOfTable, forceAction) => {
   };
 
   const tableName = eval(list_of_tables[numOfTable]);
-  const NEW_RECORD_DATA = new tableName(userData);
+  const NEW_RECORD_DATA = userData;
   const VALIDATE_ACTION = await Validator.VALIDATE_REQUEST_INPUT(userData, 1);
-  console.log(VALIDATE_ACTION.action);
-  console.log("force action ", forceAction);
-  let action = forceAction != "null" ? forceAction : VALIDATE_ACTION.action;
-  console.log("action ,ssss", action);
+  const action = forceAction != "null" ? forceAction : VALIDATE_ACTION.action;
+
   return await eval(action_to_function_hash[action])(
     NEW_RECORD_DATA,
-    VALIDATE_ACTION.id,
+    VALIDATE_ACTION,
     tableName,
     action
   );

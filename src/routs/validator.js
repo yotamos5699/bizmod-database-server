@@ -25,7 +25,6 @@ const VALIDATE_REQUEST_INPUT = async (configObj, testNum) => {
     return { status: false, data: e };
   }
 
-  console.log("fetched Data ^^", fetchedData.length);
   const amount_of_records_found = fetchedData.length;
   console.log("dataaaaa", fetchedData._id);
   if (amount_of_records_found == 1)
@@ -35,6 +34,7 @@ const VALIDATE_REQUEST_INPUT = async (configObj, testNum) => {
         action_hash_in_one_instent[testNum] &&
         action_hash_in_one_instent[testNum][amount_of_records_found],
       id: fetchedData[0]._id,
+      data: fetchedData[0],
     };
 
   if (amount_of_records_found == 0)
@@ -43,6 +43,7 @@ const VALIDATE_REQUEST_INPUT = async (configObj, testNum) => {
       action:
         action_hash_in_one_instent[testNum] &&
         action_hash_in_one_instent[testNum][amount_of_records_found],
+      data: null,
     };
   if (fetchedData.length != 1) {
     data += `u got ${fetchedData.length} records in dataBase ecpected 1\n`;

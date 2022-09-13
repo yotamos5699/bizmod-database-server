@@ -1,3 +1,7 @@
+/*
+--- extract the user id header extraction to a public function 
+*/
+
 const express = require("express");
 const MGrouter = express.Router();
 const mongoose = require("mongoose");
@@ -58,8 +62,16 @@ MGrouter.post("/api/loadmatrixes", async (req, res) => {
 MGrouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
   let body = await req.body;
   console.log("body in save matrix !!!", body);
-  const { matrixID, userID, matrixesData } = body;
+  const { matrixID, matrixesData } = body;
+  let user = await req.user;
+  let userID;
+  try {
+    userID = user.fetchedData?.userID ? user.fetchedData.userID : user.userID;
+  } catch (e) {
+    console.log("*******  no id in request *******");
+  }
 
+  console.log(userID);
   let pulledMatrixData = matrixesData?.matrixesData;
   let inDataBase;
   try {
@@ -71,9 +83,10 @@ MGrouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
   if (inDataBase.length == 0)
     return res.send({ status: "no", data: "user id not found" });
 
+  console.log("matrix name LLLLL", body.matrixName);
   let reqMtxData = {
-    Date: body.Date ? body.Date : new Date(),
-    matrixName: body.martixName ? body.martixName : matrixID,
+    Date: body.Date ? new Date(body.Date) : new Date(),
+    matrixName: body.matrixName ? body.matrixName : matrixID,
     matrixID: matrixID,
     userID: userID,
     isBI: body.isBI ? body.isBI : false,
@@ -86,7 +99,7 @@ MGrouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
   };
 
   const searchData = await MtxLog.find({ matrixID: matrixID });
-  console.log(searchData);
+  console.log({ searchData });
   searchData.length == 0
     ? new MtxLog(reqMtxData)
         .save()
@@ -127,26 +140,32 @@ const saveDataForBi = async (reqMtxData, userID) => {
     TID: "1",
   });
 
-  // const reportData = await StoredReports.find({ ID: reportID, userID:userID });
-  // console.log(
-  //   `report data ^^^^^ \n ${JSON.stringify(
-  //     Object.keys(reportData[0]._doc.Report.jsondata)
-  //   )}`
-  // );
-
   let biData = [];
   let dataRow = {};
-  let data = JSON.parse(reqMtxData.matrixesData);
+  let data;
+  try {
+    data = JSON.parse(reqMtxData.matrixesData);
+  } catch (e) {
+    return res.send({ status: "no", data: `in saveDataForBi func \n ${e}` });
+  }
 
-  //  console.log("data !!!! ", data);
+  if (!Array.isArray(data.mainMatrix.cellsData))
+    return res.send({
+      status: "no",
+      data: `data.mainMatrix.cellsData is not an Array`,
+    });
+
   data.mainMatrix.cellsData.forEach((row, rowIndex) => {
-    row.forEach((cell) => {
+    row.forEach((cell, cellIndex) => {
       console.log("cell ", cell);
       dataRow = {
-        Date: reqMtxData.Date,
+        Date: new Date(reqMtxData.Date),
         AccountKey: data.mainMatrix.AccountKey[rowIndex],
         DocumentID: data.mainMatrix.DocumentID[rowIndex],
-        itemKey: data.mainMatrix.itemsHeaders[rowIndex],
+        itemKey: data.mainMatrix.itemsHeaders[cellIndex],
+        itemName: data.mainMatrix.itemsNames
+          ? data.mainMatrix.itemsNames[cellIndex]
+          : data.mainMatrix.itemsHeaders[cellIndex],
         Quantity: cell,
       };
       biData.push(dataRow);
@@ -154,14 +173,12 @@ const saveDataForBi = async (reqMtxData, userID) => {
     });
   });
 
-  // console.log("bi before send ", biData);
-
   let rows = new BiRows(biData);
 
   biData.length > 1
     ? BiRows.insertMany(biData)
         .then((result) => {
-          //  console.log("BiData !!!!!!!", result);
+          console.log("****** BiData ******\n", result);
           return { status: "yes", data: result };
         })
         .catch((e) => {
@@ -235,8 +252,11 @@ MGrouter.post("/api/getdata", Helper.authenticateToken, async (req, res) => {
   let { collection, searchParams } = await req.body;
   let userID;
   let user = await req.user;
+  console.log("before \n", { searchParams });
+  // if (searchParams.Date) searchParams.Date = new Date(searchParams.Date);
 
-  console.log("user @#@@@@@@@@@@@@@@ ", user);
+  console.log("after \n", { searchParams });
+  console.log({ user });
 
   try {
     userID = user.fetchedData?.userID ? user.fetchedData.userID : user.userID;
@@ -248,7 +268,7 @@ MGrouter.post("/api/getdata", Helper.authenticateToken, async (req, res) => {
     return res.send({ status: "no", data: "error in search params" });
 
   searchParams.userID = userID;
-  console.log("user id $$$$$$$$$$$$$$$$$$$", userID);
+  console.log({ userID });
   let searchResult = await Helper.getData(collection, searchParams);
   return res.send(searchResult);
 });
@@ -292,56 +312,76 @@ MGrouter.post("/api/deleteData", async (req, res) => {
       userID: searchResult,
     });
 });
-MGrouter.post("/api/setConfig", async (req, res) => {
+MGrouter.post("/api/setConfig", Helper.authenticateToken, async (req, res) => {
   const actionHeader = req.headers["forcedaction"];
-  console.log("************** action header ********** ", actionHeader);
+  const configObj = await req.body;
+  const validate_data = await Validator.VALIDATE_REQUEST_INPUT(configObj, 0);
+  const user = await req.user;
+  console.log({ user });
+  let userID;
 
-  let configObj = await req.body;
-  // console.log(configObj);
-  let validate_data = await Validator.VALIDATE_REQUEST_INPUT(configObj, 0);
-  console.log(validate_data.status);
+  try {
+    userID = user.fetchedData?.userID ? user.fetchedData.userID : user.userID;
+  } catch (e) {
+    console.log("*******  no id in request *******");
+  }
 
   if (validate_data.status == false)
     return res.send({ status: "no", data: validate_data });
 
+  configObj.userID = userID;
   Helper.setConfig(configObj, 1, actionHeader)
     .then((searchResult) => {
-      console.log("searchResult in setConfig ~~~~ ", searchResult);
+      console.log({ searchResult });
       return res.send(searchResult);
     })
     .catch((e) => res.send(e));
 });
 
-MGrouter.post("/api/setErpConfig", async (req, res) => {
-  const actionHeader = req.headers["forcedaction"];
-  console.log("************** action header ********** ", req.headers);
+MGrouter.post(
+  "/api/setErpConfig",
+  Helper.authenticateToken,
+  async (req, res) => {
+    let userID;
+    const user = await req.user;
+    const actionHeader = req.headers["forcedaction"];
+    console.log({ user });
 
-  let configObj = await req.body;
-  console.log(configObj);
-  let validate_data = await Validator.VALIDATE_REQUEST_INPUT(configObj, 0);
-  console.log("after validetion ###", validate_data);
-  if (!validate_data.status)
-    return res.send({ status: "no", data: validate_data.data });
+    try {
+      userID = user.fetchedData?.userID ? user.fetchedData.userID : user.userID;
+    } catch (e) {
+      console.log("*******  no id in request *******\n", e);
+    }
 
-  Helper.setConfig(configObj, 1, actionHeader)
-    .then((searchResult) => {
-      console.log("searchResult in setConfig ~~~~ ", searchResult);
-      return res.send(searchResult);
-    })
-    .catch((e) => res.send(e));
-});
+    let configObj = await req.body;
+    configObj.userID = userID;
+
+    console.log(configObj);
+    let validate_data = await Validator.VALIDATE_REQUEST_INPUT(configObj, 0);
+
+    if (!validate_data.status)
+      return res.send({ status: "no", data: validate_data.data });
+
+    Helper.setConfig(configObj, 1, actionHeader)
+      .then((searchResult) => {
+        console.log("*** setConfig ***\n ", { searchResult });
+        return res.send(searchResult);
+      })
+      .catch((e) => res.send(e));
+  }
+);
 
 MGrouter.post("/api/saveDocs", Helper.authenticateToken, async (req, res) => {
   const docsArrey = await req.body;
-  console.log("************** doc arrey to db ********** ", docsArrey);
+  console.log("************** /API/saveDocs **********\n ", { docsArrey });
 
-  const functionHash = { true: "insertMany", false: "save" };
   if (!Array.isArray(docsArrey))
     return res.send({ status: no, result: "not an array" });
   const isBiggerThenOne = docsArrey.length > 1;
+
   const data = new DocData(docsArrey[0]);
-  console.log("$$$$$$$$$$$$$ data $$$$$$$$$$$$", data);
-  //const selectedFunction = eval(functionHash[isBiggerThenOne]);
+  console.log({ data });
+
   isBiggerThenOne
     ? DocData.insertMany(docsArrey)
         .then((result) => {
