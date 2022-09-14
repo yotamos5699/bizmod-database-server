@@ -204,7 +204,9 @@ MGrouter.post(
     let userID;
 
     try {
-      userID = await req.user.fetchedData.userID;
+      userID = (await req.user.fetchedData.userID)
+        ? req.user.fetchedData.userID
+        : req.user.userID;
     } catch (e) {
       console.log("*******  no id in request *******");
     }
