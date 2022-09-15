@@ -35,7 +35,7 @@ const matrixesData = new Schema(
 const SigningStat = new Schema(
   {
     storedDocUrl: String,
-    signDocUrl: String,
+    signedDocUrl: String,
     isSigned: Boolean,
   },
   {

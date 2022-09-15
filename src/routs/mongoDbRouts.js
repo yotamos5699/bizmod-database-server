@@ -6,6 +6,7 @@ const express = require("express");
 const MGrouter = express.Router();
 const mongoose = require("mongoose");
 const Validator = require("./validator");
+const fbHelper = require("../DBs/fbHelper");
 const cors = require("cors");
 MGrouter.use(
   cors({
@@ -202,13 +203,16 @@ MGrouter.post(
   Helper.authenticateToken,
   async (req, res) => {
     let userID;
+    let user = await req.user;
 
+    console.log("user before try $$$$\n");
     try {
-      userID = (await req.user.fetchedData.userID)
-        ? req.user.fetchedData.userID
-        : req.user.userID;
+      userID = (await user.fetchedData?.userID)
+        ? user.fetchedData.userID
+        : user.userID;
     } catch (e) {
       console.log("*******  no id in request *******");
+      return res.send("problem with id");
     }
 
     //if(!userID) return res.send({ status: "no", data:'no user id' });
@@ -289,7 +293,19 @@ MGrouter.post("/api/handleLogin", async (req, res) => {
     });
 });
 
-MGrouter.post("/api/deleteData", async (req, res) => {
+MGrouter.post("/api/deleteData", Helper.authenticateToken, async (req, res) => {
+  let user = await req.user;
+  let userID;
+
+  console.log("after \n", { searchParams });
+  console.log({ user });
+
+  try {
+    userID = user.fetchedData?.userID ? user.fetchedData.userID : user.userID;
+  } catch (e) {
+    console.log("*******  no id in request *******");
+  }
+
   const TBhash = {
     Users: 0,
     Config: 1,
@@ -325,7 +341,7 @@ MGrouter.post("/api/setConfig", Helper.authenticateToken, async (req, res) => {
   try {
     userID = user.fetchedData?.userID ? user.fetchedData.userID : user.userID;
   } catch (e) {
-    console.log("*******  no id in request *******");
+    return res.send('"*******  no id in request *******"');
   }
 
   if (validate_data.status == false)
@@ -405,5 +421,65 @@ MGrouter.post("/api/saveDocs", Helper.authenticateToken, async (req, res) => {
           res.send({ status: "no", data: e });
         });
 });
+
+// const SigningStat = new Schema(
+//   {
+//     storedDocUrl: String,
+//     signedDocUrl: String,
+//     isSigned: Boolean,
+//   },
+//   {
+//     timestamps: true,
+//   }
+// );
+
+// const docsData = new Schema(
+//   {
+//     userID: { type: String, required: true },
+//     DocumentIssuedStatus: String,
+//     ValueDate: String,
+//     DocumentDefID: Number,
+//     StockID: Number,
+//     DocNumber: Number,
+//     AccountKey: String,
+//     Accountname: String,
+//     TotalCost: Number,
+//     Address: String,
+//     DocumentDetails: String,
+//     isStored: { type: Boolean, default: false },
+//     DocUrl: String,
+//     Action: Number,
+//     SigStat: SigningStat,
+//   },
+//   { timestamps: true, strict: true, strictQuery: false }
+// );
+
+MGrouter.post(
+  "/api/storeTempUrls",
+  Helper.authenticateToken,
+  async (req, res) => {
+    let userID;
+    try {
+      userID = (await req.user.fetchedData.userID)
+        ? req.user.fetchedData.userID
+        : req.user.userID;
+    } catch (e) {
+      console.log("*******  no id in request *******");
+    }
+
+    //if(!userID) return res.send({ status: "no", data:'no user id' });
+
+    DocData.find({ userID: userID })
+      .exec()
+      .then((result) => {
+        // console.log(result);
+        res.send({ status: "yes", data: result });
+      })
+      .catch((e) => {
+        console.log(e);
+        res.send({ status: "no", data: e });
+      });
+  }
+);
 
 module.exports = MGrouter;
