@@ -39,7 +39,7 @@ const SigningStat = new Schema(
     isSigned: Boolean,
   },
   {
-    timestamps: true,
+     timestamps: true, strict: true, strictQuery: false 
   }
 );
 
