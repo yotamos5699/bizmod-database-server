@@ -98,26 +98,31 @@ const saveRecord = async (NEW_RECORD_DATA, id, tableName, action) => {
     });
 };
 
-const updateRecord = async (NEW_RECORD_DATA, reportData, tableName, action) => {
+const updateRecord = async (
+  NEW_RECORD_DATA_a,
+  reportData,
+  tableName,
+  action
+) => {
   console.log("************** update config **************");
-
-  tableName
+  // consol.log("new record data \n", NEW_RECORD_DATA);
+  console.table({ reportData });
+  const NEW_RECORD_DATA = await NEW_RECORD_DATA_a;
+  console.log({ NEW_RECORD_DATA });
+  return await tableName
     .updateOne(
       { userID: reportData.data.userID },
       {
-        $set: { ...reportData.data, NEW_RECORD_DATA },
+        $set: NEW_RECORD_DATA,
       }
     )
-    .then((result) => {
-      console.log(
-        "***************************** updating matrix data !!!! ******************************"
-      );
-      console.log(result);
-      res.send({ status: "yes", data: result });
+    .then((UPDATED_DATA) => {
+      console.log({ UPDATED_DATA });
+      return { status: "yes", data: UPDATED_DATA };
     })
-    .catch((e) => {
-      console.log(e);
-      res.send({ status: "no", data: e });
+    .catch((error) => {
+      console.log({ error });
+      return { status: "no", data: erro };
     });
 };
 
@@ -125,7 +130,7 @@ const deleteRecord = async (NEW_RECORD_DATA, userData, table, action) => {
   console.log("************** delete config **************");
   let tableName = table == 4 ? eval(list_of_tables[table]) : table;
   console.log("table name $$$$$$$$$$$$$$$", tableName);
-  return tableName
+  return await tableName
     .findOneAndRemove({ _id: userData.id })
     .then((result) => {
       console.log(result);
