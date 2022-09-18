@@ -91,6 +91,8 @@ MGrouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
     matrixID: matrixID,
     userID: userID,
     isBI: body.isBI ? body.isBI : false,
+    isProduced: body.isProduced ? body.isProduced : false,
+    isInitiated: body.isInitiated ? body.isInitiated : false,
     matrixesData: JSON.stringify(
       pulledMatrixData ? pulledMatrixData : matrixesData
     ),
