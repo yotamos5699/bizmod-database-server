@@ -1,0 +1,14 @@
+"filename", "language", "JavaScript", "JSON", "comment", "blank", "total"
+"c:\Users\win-10\Desktop\code\DB SERVER\src\DBs\dbConfig\firebaseConfig.js", "JavaScript", 14, 0, 17, 6, 37
+"c:\Users\win-10\Desktop\code\DB SERVER\src\DBs\dbConfig\pgConfig.js", "JavaScript", 9, 0, 0, 2, 11
+"c:\Users\win-10\Desktop\code\DB SERVER\src\DBs\dbFiles\lastItemsCall.json", "JSON", 0, 5307, 0, 0, 5307
+"c:\Users\win-10\Desktop\code\DB SERVER\src\DBs\dbFiles\mgHelper.js", "JavaScript", 19, 0, 1, 9, 29
+"c:\Users\win-10\Desktop\code\DB SERVER\src\DBs\dbObjects\MGschemas.js", "JavaScript", 205, 0, 14, 22, 241
+"c:\Users\win-10\Desktop\code\DB SERVER\src\DBs\fbHelper.js", "JavaScript", 32, 0, 0, 14, 46
+"c:\Users\win-10\Desktop\code\DB SERVER\src\app.js", "JavaScript", 22, 0, 1, 5, 28
+"c:\Users\win-10\Desktop\code\DB SERVER\src\not in use files\postGress.js", "JavaScript", 9, 0, 103, 44, 156
+"c:\Users\win-10\Desktop\code\DB SERVER\src\routs\Helper.js", "JavaScript", 153, 0, 17, 15, 185
+"c:\Users\win-10\Desktop\code\DB SERVER\src\routs\fireBaseRouts.js", "JavaScript", 34, 0, 0, 4, 38
+"c:\Users\win-10\Desktop\code\DB SERVER\src\routs\mongoDbRouts.js", "JavaScript", 392, 0, 42, 54, 488
+"c:\Users\win-10\Desktop\code\DB SERVER\src\routs\validator.js", "JavaScript", 58, 0, 0, 6, 64
+"Total", "-", 947, 5307, 195, 181, 6630
