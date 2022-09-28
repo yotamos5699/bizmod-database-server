@@ -70,10 +70,10 @@ MGrouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
   );
   const { matrixID, matrixesData } = body;
   let user = await req.user;
-  console.log({user});
+  console.log({ user });
   let userID;
   try {
-    userID = user?.fetchedData.userID ? user.fetchedData.userID : user.userID;
+    userID = user?.fetchedData?.userID ? user.fetchedData.userID : user.userID;
   } catch (e) {
     console.log("*******  no id in request *******");
   }
