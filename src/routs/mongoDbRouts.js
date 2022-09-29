@@ -8,6 +8,7 @@ const mongoose = require("mongoose");
 const Validator = require("./validator");
 const fbHelper = require("../DBs/fbHelper");
 const cors = require("cors");
+const utfZone = "en";
 MGrouter.use(
   cors({
     origin: "*",
@@ -92,7 +93,11 @@ MGrouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
 
   console.log("matrix name LLLLL", body.matrixName);
   let reqMtxData = {
-    Date: body.Date ? new Date(body.Date) : new Date(),
+    Date: body.Date
+      ? new Date(body.Date).toLocaleString(utfZone, {
+          timeZone: "Asia/Jerusalem",
+        })
+      : new Date().toLocaleString(utfZone, { timeZone: "Asia/Jerusalem" }),
     matrixName: body.matrixName ? body.matrixName : matrixID,
     matrixID: matrixID,
     userID: userID,
@@ -167,7 +172,9 @@ const saveDataForBi = async (reqMtxData, userID) => {
     row.forEach((cell, cellIndex) => {
       console.log("cell ", cell);
       dataRow = {
-        Date: new Date(reqMtxData.Date),
+        Date: new Date(reqMtxData.Date).toLocaleString(utfZone, {
+          timeZone: "Asia/Jerusalem",
+        }),
         AccountKey: data.mainMatrix.AccountKey[rowIndex],
         DocumentID: data.mainMatrix.DocumentID[rowIndex],
         itemKey: data.mainMatrix.itemsHeaders[cellIndex],
