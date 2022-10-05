@@ -18,7 +18,7 @@ const matrixesData = new Schema(
     matrixID: String,
     matrixName: String,
     userID: { type: String, required: true },
-    matrixesData: String,
+    matrixesData: Object,
     matrixesUiData: String,
     isBI: {type:Boolean, default: false},
     isProduced:{type:Boolean, default: false},

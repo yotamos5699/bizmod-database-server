@@ -104,9 +104,7 @@ MGrouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
     isBI: body.isBI ? body.isBI : false,
     isProduced: body.isProduced ? body.isProduced : false,
     isInitiated: body.isInitiated ? body.isInitiated : false,
-    matrixesData: JSON.stringify(
-      pulledMatrixData ? pulledMatrixData : matrixesData
-    ),
+    matrixesData: pulledMatrixData ? pulledMatrixData : matrixesData,
     matrixesUiData: body.matrixesUiData ? body.matrixesUiData : null,
   };
 
@@ -130,7 +128,7 @@ MGrouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
     : MtxLog.updateOne(
         { matrixID: matrixID },
         {
-          $set: { ...reqMtxData, id: searchData[0]._id },
+          $set: { ...body, id: searchData[0]._id },
         }
       )
         .then((result) => {
@@ -144,11 +142,15 @@ MGrouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
           console.log(e);
           res.send({ status: "no", data: e });
         });
+  console.log("is bi :", body.isBI);
 
-  if (reqMtxData.isBI) saveDataForBi(reqMtxData, userID);
+  if (body.isBI) saveDataForBi(reqMtxData, userID)
+  else console.log('no i needed')
+  ;
 });
 
 const saveDataForBi = async (reqMtxData, userID) => {
+  console.log("++++++++++++++++++++ save to Bi ++++++++++++++++++");
   const reportID = JSON.stringify({
     TID: "1",
   });
@@ -157,9 +159,10 @@ const saveDataForBi = async (reqMtxData, userID) => {
   let dataRow = {};
   let data;
   try {
-    data = JSON.parse(reqMtxData.matrixesData);
+    data = reqMtxData.matrixesData;
   } catch (e) {
-    return res.send({ status: "no", data: `in saveDataForBi func \n ${e}` });
+    console.log(e);
+    return { status: "no", data: `in saveDataForBi func \n ${e}` };
   }
 
   if (!Array.isArray(data.mainMatrix.cellsData))
@@ -170,7 +173,7 @@ const saveDataForBi = async (reqMtxData, userID) => {
 
   data.mainMatrix.cellsData.forEach((row, rowIndex) => {
     row.forEach((cell, cellIndex) => {
-      console.log("cell ", cell);
+      //   console.log("cell ", cell);
       dataRow = {
         Date: new Date(reqMtxData.Date).toLocaleString(utfZone, {
           timeZone: "Asia/Jerusalem",
@@ -193,7 +196,7 @@ const saveDataForBi = async (reqMtxData, userID) => {
   biData.length > 1
     ? BiRows.insertMany(biData)
         .then((result) => {
-          console.log("****** BiData ******\n", result);
+          //   console.log("****** BiData ******\n", result);
           return { status: "yes", data: result };
         })
         .catch((e) => {
