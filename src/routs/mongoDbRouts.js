@@ -94,9 +94,7 @@ MGrouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
   console.log("matrix name LLLLL", body.matrixName);
   let reqMtxData = {
     Date: body.Date
-      ? new Date(body.Date).toLocaleString(utfZone, {
-          timeZone: "Asia/Jerusalem",
-        })
+      ? body.Date
       : new Date().toLocaleString(utfZone, { timeZone: "Asia/Jerusalem" }),
     matrixName: body.matrixName ? body.matrixName : matrixID,
     matrixID: matrixID,
@@ -144,9 +142,8 @@ MGrouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
         });
   console.log("is bi :", body.isBI);
 
-  if (body.isBI) saveDataForBi(reqMtxData, userID)
-  else console.log('no i needed')
-  ;
+  if (body.isBI) saveDataForBi(reqMtxData, userID);
+  else console.log("no i needed");
 });
 
 const saveDataForBi = async (reqMtxData, userID) => {
@@ -175,9 +172,7 @@ const saveDataForBi = async (reqMtxData, userID) => {
     row.forEach((cell, cellIndex) => {
       //   console.log("cell ", cell);
       dataRow = {
-        Date: new Date(reqMtxData.Date).toLocaleString(utfZone, {
-          timeZone: "Asia/Jerusalem",
-        }),
+        Date: reqMtxData.Date,
         AccountKey: data.mainMatrix.AccountKey[rowIndex],
         DocumentID: data.mainMatrix.DocumentID[rowIndex],
         itemKey: data.mainMatrix.itemsHeaders[cellIndex],
