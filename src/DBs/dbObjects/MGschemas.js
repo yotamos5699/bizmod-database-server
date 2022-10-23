@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const uniqueValidator = require("mongoose-unique-validator");
 const Schema = mongoose.Schema;
 
 // ********************************    MATRIX LOGS       ********************************//
@@ -16,13 +17,13 @@ const matrixesData = new Schema(
   {
     Date: Date,
     matrixID: String,
-    matrixName: String,
+    matrixName: { type: String, unique: true },
     userID: { type: String, required: true },
     matrixesData: Object,
     matrixesUiData: String,
-    isBI: {type:Boolean, default: false},
-    isProduced:{type:Boolean, default: false},
-    isInitiated:{type:Boolean, default: false},
+    isBI: { type: Boolean, default: false },
+    isProduced: { type: Boolean, default: false },
+    isInitiated: { type: Boolean, default: false },
     counter: { type: Number, default: 0 },
     innerLog: [innerLog],
   },
@@ -32,7 +33,7 @@ const matrixesData = new Schema(
     strictQuery: false,
   }
 );
-
+matrixesData.plugin(uniqueValidator);
 //******************************** SIGNETURE PROCESS  *********************************************/
 const SigningStat = new Schema(
   {
