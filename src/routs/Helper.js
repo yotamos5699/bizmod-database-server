@@ -139,10 +139,10 @@ const updateRecord = async (
     });
 };
 
-const deleteByParames = async (userID, collection, identifier, ID) => {
+const deleteByParames = async (userID, collection, identifier, identifierValue) => {
   const Table = eval(collection);
   //const ColoumnName = eval(identifier)
-  return await Table.findOneAndRemove({ userID: userID, [identifier]: ID })
+  return await Table.findOneAndRemove({ userID: userID, [identifier]: identifierValue })
     .then((result) => {
       console.log({ result });
       return { status: result ? "yes" : "no record in db", data: result };

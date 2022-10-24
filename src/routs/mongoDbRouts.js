@@ -310,15 +310,15 @@ MGrouter.post("/api/deleteData", Helper.authenticateToken, async (req, res) => {
   const user = await req.user;
   const userID = await Helper.extractUserId(req);
 
- // console.log("after \n", { searchParams });
+  // console.log("after \n", { searchParams });
   console.log({ user });
 
-  let { collection, ID, indentifier } = await req.body;
+  let { collection, indentifierValue, indentifier } = await req.body;
   let searchResult = await Helper.deleteByParames(
     userID,
     collection,
     indentifier,
-    ID
+    indentifierValue
   );
 
   if (searchResult.status == "no")
