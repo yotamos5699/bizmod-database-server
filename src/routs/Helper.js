@@ -38,6 +38,19 @@ const mockConfig = {
   },
 };
 
+const extractUserId = async (req) => {
+  let user = await req.user;
+  console.log({ user });
+  let userID;
+  try {
+    userID = user?.fetchedData?.userID ? user.fetchedData.userID : user.userID;
+  } catch (e) {
+    console.log(e);
+    userID = null;
+  }
+  return userID;
+};
+
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
@@ -126,6 +139,20 @@ const updateRecord = async (
     });
 };
 
+const deleteByParames = async (userID, collection, identifier, ID) => {
+  const Table = eval(collection);
+  //const ColoumnName = eval(identifier)
+  return await Table.findOneAndRemove({ userID: userID, [identifier]: ID })
+    .then((result) => {
+      console.log({ result });
+      return { status: result ? "yes" : "no record in db", data: result };
+    })
+    .catch((e) => {
+      console.log(e);
+      return { status: "no", data: e };
+    });
+};
+
 const deleteRecord = async (NEW_RECORD_DATA, userData, table, action) => {
   console.log("************** delete config **************");
   let tableName = table == 4 ? eval(list_of_tables[table]) : table;
@@ -167,6 +194,8 @@ module.exports.setConfig = setConfig;
 module.exports.getData = getData;
 module.exports.mockConfig = mockConfig;
 module.exports.authenticateToken = authenticateToken;
+module.exports.extractUserId = extractUserId;
+module.exports.deleteByParames = deleteByParames;
 // function hashUserKey(key) {
 //   const keysLocation = { MtxLog: "matrixID", Users: "userPassword" };
 //   let hashedKey = crypto.createHash("md5").update(key).digest("hex");

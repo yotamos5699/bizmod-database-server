@@ -62,7 +62,6 @@ MGrouter.post("/api/loadmatrixes", async (req, res) => {
 });
 
 MGrouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
-
   let body = await req.body;
   console.log(
     "body in save matrix !!!",
@@ -173,6 +172,7 @@ const saveDataForBi = async (reqMtxData, userID) => {
     row.forEach((cell, cellIndex) => {
       //   console.log("cell ", cell);
       dataRow = {
+        userID: reqMtxData.userID,
         Date: reqMtxData.Date,
         AccountKey: data.mainMatrix.AccountKey[rowIndex],
         DocumentID: data.mainMatrix.DocumentID[rowIndex],
@@ -307,31 +307,18 @@ MGrouter.post("/api/handleLogin", async (req, res) => {
 });
 
 MGrouter.post("/api/deleteData", Helper.authenticateToken, async (req, res) => {
-  let user = await req.user;
-  let userID;
+  const user = await req.user;
+  const userID = await Helper.extractUserId(req);
 
-  console.log("after \n", { searchParams });
+ // console.log("after \n", { searchParams });
   console.log({ user });
 
-  try {
-    userID = user.fetchedData?.userID ? user.fetchedData.userID : user.userID;
-  } catch (e) {
-    console.log("*******  no id in request *******");
-  }
-
-  const TBhash = {
-    Users: 0,
-    Config: 1,
-    ErpConfig: 2,
-    MtxLog: 3,
-    BiRows: 4,
-  };
-  let { collection, rowID } = await req.body;
-  let searchResult = await Helper.deleteRecord(
-    null,
-    rowID,
-    TBhash[collection],
-    null
+  let { collection, ID, indentifier } = await req.body;
+  let searchResult = await Helper.deleteByParames(
+    userID,
+    collection,
+    indentifier,
+    ID
   );
 
   if (searchResult.status == "no")
@@ -339,7 +326,7 @@ MGrouter.post("/api/deleteData", Helper.authenticateToken, async (req, res) => {
   else
     return res.send({
       status: "yes",
-      // configObj: Helper.mockConfig,
+
       userID: searchResult,
     });
 });

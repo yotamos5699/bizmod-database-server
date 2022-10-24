@@ -71,6 +71,7 @@ const docsData = new Schema(
 
 const biRows = new Schema(
   {
+    userID: { type: String, required: true },
     Date: Date,
     AccountKey: String,
     DocumentID: Number,
