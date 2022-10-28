@@ -1,0 +1,6 @@
+{
+    "editor.formatOnSave": true,
+    "workbench.editor.labelFormat": "default",
+    "workbench.editor.untitled.labelFormat": "name",
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+}

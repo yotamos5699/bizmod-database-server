@@ -16,9 +16,11 @@ const list_of_tables = ["Users", "Config", "ErpConfig", "MtxLog", "BiRows"];
 const column_name_list = ["_id", "userID", "userID", "userID"];
 const mockConfig = {
   usserID: { type: String, required: true },
-  DefaultReports: {
-    castumers: { "קוד מיון": 300 },
-    products: { מחסן: 1 },
+  Reports: {
+    DefaultReports: {
+      castumers: { "קוד מיון": 300 },
+      products: { מחסן: 1 },
+    },
   },
   DefaultDriver: {
     isDefault: false,
