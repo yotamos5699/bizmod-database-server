@@ -16,6 +16,10 @@ const list_of_tables = ["Users", "Config", "ErpConfig", "MtxLog", "BiRows"];
 const column_name_list = ["_id", "userID", "userID", "userID"];
 const mockConfig = {
   usserID: { type: String, required: true },
+  DefaultReports: {
+    castumers: { "קוד מיון": 300 },
+    products: { מחסן: 1 },
+  },
   DefaultDriver: {
     isDefault: false,
     //   AccountKey: Number,
@@ -139,10 +143,18 @@ const updateRecord = async (
     });
 };
 
-const deleteByParames = async (userID, collection, identifier, identifierValue) => {
+const deleteByParames = async (
+  userID,
+  collection,
+  identifier,
+  identifierValue
+) => {
   const Table = eval(collection);
   //const ColoumnName = eval(identifier)
-  return await Table.findOneAndRemove({ userID: userID, [identifier]: identifierValue })
+  return await Table.findOneAndRemove({
+    userID: userID,
+    [identifier]: identifierValue,
+  })
     .then((result) => {
       console.log({ result });
       return { status: result ? "yes" : "no record in db", data: result };
