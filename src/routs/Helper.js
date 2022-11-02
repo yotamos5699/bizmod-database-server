@@ -16,6 +16,14 @@ const list_of_tables = ["Users", "Config", "ErpConfig", "MtxLog", "BiRows"];
 const column_name_list = ["_id", "userID", "userID", "userID"];
 const mockConfig = {
   usserID: { type: String, required: true },
+  ModulsPremission: {
+    Messages: {
+      whatsApp: {
+        isOpend: true,
+        remainingSum: 100,
+      },
+    },
+  },
   Reports: {
     DefaultReports: {
       castumers: { "קוד מיון": 300 },
