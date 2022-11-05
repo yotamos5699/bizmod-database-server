@@ -52,7 +52,7 @@ const docsData = new Schema(
   {
     userID: { type: String, required: true },
     DocumentIssuedStatus: String,
-    ValueDate: String,
+    ValueDate: Date,
     DocumentDefID: Number,
     StockID: Number,
     DocNumber: Number,
