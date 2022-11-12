@@ -1,9 +1,11 @@
 const mongoose = require("mongoose");
 const uniqueValidator = require("mongoose-unique-validator");
 const Schema = mongoose.Schema;
-
+const tempKey =
+  "23e54b4b3e541261140bdeb257538ba11c5104620e61217d5d6735a3c9361a5aac67a7f85278e4e53f3008598d8927f68e89e3e16147c194f96976bdf3075d55";
 // ********************************    MATRIX LOGS       ********************************//
-
+const tempDbName = "wizdb2394n5";
+const tempServer = "lb11.wizcloud.co.il";
 const innerLog = new Schema(
   {
     userID: { type: String, required: true },
@@ -106,113 +108,70 @@ const users = new Schema(
   { timestamps: true, strict: true, strictQuery: false }
 );
 
-//********************************************* PLANS **************************************/
-const matrixAI = new Schema({
-  isMatrix: { type: Boolean, required: true },
-});
-const driveAI = new Schema({
-  isDriveAI: { type: Boolean, required: true },
-});
-
-const clockAI = new Schema({
-  isClockAi: { type: Boolean, required: true },
-});
-
-const signAI = new Schema({
-  isSignAI: { type: Boolean, required: true },
-});
-
-const plans = new Schema(
-  {
-    planID: String,
-    adminID: String,
-    MatrixAI: matrixAI,
-    DriveAI: driveAI,
-    ClockAI: clockAI,
-    SignAI: signAI,
-    Mail: { type: String, required: true },
-    PlanKey: String,
-    subPremissions: {},
-  },
-  { timestamps: true }
-);
-
-// ******************************************* Keys and enteries ***********************************//
-//
-const enteri = new Schema(
-  {
-    MetaData: String,
-    userID: { type: String },
-  },
-  { timestamps: true }
-);
-
-const keys = new Schema(
-  {
-    ProcessID: String,
-    isAdmin: { type: Boolean, required: true },
-    adminID: String,
-    HashedUserKey: { type: String, required: true },
-    userID: { type: String, required: true },
-    LogedEntries: [enteri],
-  },
-  { timestamps: true }
-);
-
 //************************************** Config ^*************************************//
 /*          FOR NEW USERS IN TRIELS AND SUB ADMIN USER FOR PAYED PLAN                 */
 /*          VIA IF <USER PLAN> != TRIEL      */
 
-const erpConfig = new Schema(
-  {
-    erpName: { type: String, required: true },
-    userID: { type: String, required: true },
-    CompanyKey: String,
-    CompanyServer: String,
-    CompanyDbName: String,
-    CompanyPassword: String,
-    CompanyUserName: String,
-    CompanyNumber: String,
-  },
-  { timestamps: true, strict: true, strictQuery: false }
-);
-const driver = new Schema({
-  isDefault: { type: Boolean, default: false },
-  AccountKey: Number,
-  isFirst: Boolean,
-});
-const docDef = new Schema({
-  isDefault: { type: Boolean, default: false },
-  DocumentDef: String,
-  isFirst: Boolean,
-});
-const pMtx = new Schema({
-  docLimit: { isLimited: Boolean, Amount: Number },
-
-  sumLimit: { isLimited: Boolean, Amount: Number },
-  taxDocs: {
-    isAllow: Boolean,
-    Refund: {
-      isAllow: { type: Boolean, default: true },
-      isLimited: {
-        type: Boolean,
-        default: false,
-      },
-      Amount: Number,
-    },
-  },
-  Discount: { isAllow: Boolean, isLimited: Boolean, Amount: Number },
-  ObligoPass: { isAllow: Boolean },
-  FlagedCastumers: { isAllow: Boolean },
-});
 const config = new Schema(
   {
     userID: { type: String, required: true },
     AccountState: String,
-    DefaultDriver: driver,
-    DocumentDef: docDef,
-    PremissionMtx: pMtx,
-    ErpConfig: erpConfig,
+    ModulsPremission: {
+      BiziRoutes: {
+        isAllow: Boolean,
+        drivers: {
+          isDefault: { type: Boolean, default: false },
+          AccountKey: Number,
+        },
+      },
+      Messages: {
+        whatsApp: {
+          isAllow: Boolean,
+          remainingSum: Number,
+        },
+      },
+    },
+
+    mtxConfig: {
+      documentDef: { isDefault: { type: Boolean, default: false }, DocumentNumber: String },
+      docLimit: { isLimited: Boolean, Amount: Number },
+      sumLimit: { isLimited: Boolean, Amount: Number },
+      taxDocs: {
+        isAllow: Boolean,
+        Refund: {
+          isAllow: {
+            type: Boolean,
+            default: true,
+          },
+          isLimited: {
+            type: Boolean,
+            default: false,
+          },
+
+          Amount: Number,
+        },
+        Discount: { isAllow: Boolean, isLimited: Boolean, Amount: Number },
+        ObligoPass: { isAllow: Boolean },
+      },
+    },
+    Reports: {
+      defaultReports: {
+        castumers: {
+          sortingKey: { type: String, default: "קוד מיון" },
+          sortingValue: { type: String, default: "300" },
+        },
+        products: { sortingKey: { type: String, default: "מחסן" }, sortingValue: { type: String, default: "1" } },
+      },
+    },
+    ErpConfig: {
+      erpName: { type: String, default: "HA", required: true },
+      CompanyKey: { type: String, default: tempKey },
+      CompanyServer: { type: String, default: tempServer },
+      CompanyDbName: { type: String, default: tempDbName },
+      CompanyPassword: String,
+      CompanyUserName: String,
+      CompanyNumber: String,
+    },
     usserData: users,
   },
   { timestamps: true, strict: true, strictQuery: false }
@@ -236,17 +195,17 @@ const StoredReports = mongoose.model("StoredReports", storedReports);
 const DocData = mongoose.model("DocDataLog", docsData);
 const MtxLog = mongoose.model("MtxLog", matrixesData);
 const Users = mongoose.model("Users", users);
-const Plans = mongoose.model("Plans", plans);
+//const Plans = mongoose.model("Plans", plans);
 const BiRows = mongoose.model("BiRows", biRows);
 //const Keys = mongoose.model("Plans", keys);
 const Config = mongoose.model("Config", config);
-const ErpConfig = mongoose.model("ErpCofig", erpConfig);
+//const ErpConfig = mongoose.model("ErpCofig", erpConfig);
 
 module.exports.BiRows = BiRows;
 module.exports.DocData = DocData;
 module.exports.MtxLog = MtxLog;
 module.exports.Users = Users;
-module.exports.Plans = Plans;
+//module.exports.Plans = Plans;
 module.exports.StoredReports = StoredReports;
 module.exports.Config = Config;
-module.exports.ErpConfig = ErpConfig;
+//module.exports.ErpConfig = ErpConfig;

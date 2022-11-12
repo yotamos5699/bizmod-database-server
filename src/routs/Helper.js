@@ -105,7 +105,7 @@ const getData = async (collection, searchParams) => {
 
 const saveRecord = async (NEW_RECORD_DATA, id, tableName, action) => {
   console.log("********** saveConfig **********");
-  let NEW_RECORD = new tableName(NEW_RECORD_DATA);
+  let NEW_RECORD = new Config(NEW_RECORD_DATA);
 
   return NEW_RECORD.save()
     .then((result) => {
@@ -121,16 +121,18 @@ const saveRecord = async (NEW_RECORD_DATA, id, tableName, action) => {
 const updateRecord = async (NEW_RECORD_DATA_a, reportData, tableName, action) => {
   console.log("************** update config **************");
   // consol.log("new record data \n", NEW_RECORD_DATA);
+  console.log({ reportData });
+
   console.table({ reportData });
   const NEW_RECORD_DATA = await NEW_RECORD_DATA_a;
-  console.log({ NEW_RECORD_DATA });
-  return await tableName
-    .updateOne(
-      { userID: reportData.data.userID },
-      {
-        $set: NEW_RECORD_DATA,
-      }
-    )
+  let d = NEW_RECORD_DATA.data;
+  console.log({ d });
+  return await Config.updateOne(
+    { userID: reportData.data.userID },
+    {
+      $set: { ...d, ...NEW_RECORD_DATA },
+    }
+  )
     .then((UPDATED_DATA) => {
       console.log({ UPDATED_DATA });
       return { status: "yes", data: UPDATED_DATA };
@@ -174,7 +176,8 @@ const deleteRecord = async (NEW_RECORD_DATA, userData, table, action) => {
     });
 };
 
-const setConfig = async (userData, numOfTable, forceAction) => {
+const setConfig = async (userData, Table, forceAction) => {
+  console.log({ Table });
   console.log("action header in set config ", forceAction);
   const action_to_function_hash = {
     update: updateRecord,
@@ -182,7 +185,7 @@ const setConfig = async (userData, numOfTable, forceAction) => {
     delete: deleteRecord,
   };
 
-  const tableName = eval(list_of_tables[numOfTable]);
+  const tableName = eval(list_of_tables[Table]);
   const NEW_RECORD_DATA = userData;
   const VALIDATE_ACTION = await Validator.VALIDATE_REQUEST_INPUT(userData, 1);
   const action = forceAction != "null" ? forceAction : VALIDATE_ACTION.action;
