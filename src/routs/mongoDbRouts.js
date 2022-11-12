@@ -14,21 +14,13 @@ MGrouter.use(
     origin: "*",
   })
 );
-const {
-  MtxLog,
-  DocData,
-  Users,
-  ErpConfig,
-  BiRows,
-  StoredReports,
-} = require("../DBs/dbObjects/MGschemas");
+const { MtxLog, DocData, Users, ErpConfig, BiRows, StoredReports } = require("../DBs/dbObjects/matrix_Ui_Schemas");
 const bodyParser = require("body-parser");
 require("dotenv").config();
 
 const Helper = require("./Helper");
 // exemple process.env.WHATVER_U_WHANT
-const uri =
-  "mongodb+srv://yotamos:linux6926@cluster0.zj6wiy3.mongodb.net/mtxlog?retryWrites=true&w=majority";
+const uri = "mongodb+srv://yotamos:linux6926@cluster0.zj6wiy3.mongodb.net/mtxlog?retryWrites=true&w=majority";
 const MGoptions = { useNewUrlParser: true, useUnifiedTopology: true };
 MGrouter.use(express.json());
 MGrouter.use(bodyParser.urlencoded({ extended: true }));
@@ -63,12 +55,7 @@ MGrouter.post("/api/loadmatrixes", async (req, res) => {
 
 MGrouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
   let body = await req.body;
-  console.log(
-    "body in save matrix !!!",
-    body,
-    "\nbody. isproduced\n",
-    body.isProduced
-  );
+  console.log("body in save matrix !!!", body, "\nbody. isproduced\n", body.isProduced);
   const { matrixID, matrixesData } = body;
   let user = await req.user;
   console.log({ user });
@@ -88,14 +75,11 @@ MGrouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
     console.log(e);
     return res.send({ status: "no", data: e });
   }
-  if (inDataBase.length == 0)
-    return res.send({ status: "no", data: "user id not found" });
+  if (inDataBase.length == 0) return res.send({ status: "no", data: "user id not found" });
 
   console.log("matrix name LLLLL", body.matrixName);
   let reqMtxData = {
-    Date: body.Date
-      ? body.Date
-      : new Date().toLocaleString(utfZone, { timeZone: "Asia/Jerusalem" }),
+    Date: body.Date ? body.Date : new Date().toLocaleString(utfZone, { timeZone: "Asia/Jerusalem" }),
     matrixName: body.matrixName ? body.matrixName : matrixID,
     matrixID: matrixID,
     userID: userID,
@@ -113,9 +97,7 @@ MGrouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
     ? new MtxLog(reqMtxData)
         .save()
         .then((result) => {
-          console.log(
-            "***************************** saving matrix data !!!! ******************************"
-          );
+          console.log("***************************** saving matrix data !!!! ******************************");
           console.log(result);
           res.send({ status: "yes", data: result });
         })
@@ -130,9 +112,7 @@ MGrouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
         }
       )
         .then((result) => {
-          console.log(
-            "***************************** updating matrix data !!!! ******************************"
-          );
+          console.log("***************************** updating matrix data !!!! ******************************");
           console.log({ result });
           res.send({ status: "yes", data: result });
         })
@@ -211,37 +191,31 @@ const saveDataForBi = async (reqMtxData, userID) => {
         });
 };
 
-MGrouter.post(
-  "/api/loadDocUrls",
-  Helper.authenticateToken,
-  async (req, res) => {
-    let userID;
-    let user = await req.user;
+MGrouter.post("/api/loadDocUrls", Helper.authenticateToken, async (req, res) => {
+  let userID;
+  let user = await req.user;
 
-    console.log("user before try $$$$\n");
-    try {
-      userID = (await user.fetchedData?.userID)
-        ? user.fetchedData.userID
-        : user.userID;
-    } catch (e) {
-      console.log("*******  no id in request *******");
-      return res.send("problem with id");
-    }
-
-    //if(!userID) return res.send({ status: "no", data:'no user id' });
-
-    DocData.find({ userID: userID })
-      .exec()
-      .then((result) => {
-        // console.log(result);
-        res.send({ status: "yes", data: result });
-      })
-      .catch((e) => {
-        console.log(e);
-        res.send({ status: "no", data: e });
-      });
+  console.log("user before try $$$$\n");
+  try {
+    userID = (await user.fetchedData?.userID) ? user.fetchedData.userID : user.userID;
+  } catch (e) {
+    console.log("*******  no id in request *******");
+    return res.send("problem with id");
   }
-);
+
+  //if(!userID) return res.send({ status: "no", data:'no user id' });
+
+  DocData.find({ userID: userID })
+    .exec()
+    .then((result) => {
+      // console.log(result);
+      res.send({ status: "yes", data: result });
+    })
+    .catch((e) => {
+      console.log(e);
+      res.send({ status: "no", data: e });
+    });
+});
 
 MGrouter.post("/api/register", async (req, res) => {
   let body = await req.body;
@@ -283,8 +257,7 @@ MGrouter.post("/api/getdata", Helper.authenticateToken, async (req, res) => {
     console.log("*******  no id in request *******");
   }
 
-  if (!collection || !searchParams)
-    return res.send({ status: "no", data: "error in search params" });
+  if (!collection) return res.send({ status: "no", data: "error collection given" });
 
   searchParams.userID = userID;
   console.log({ userID });
@@ -296,8 +269,7 @@ MGrouter.post("/api/handleLogin", async (req, res) => {
   let searchParams = await req.body;
   let searchResult = await Helper.getData("Users", searchParams);
 
-  if (searchResult.status == "no")
-    return res.send({ ststus: "no", data: "no record in data base" });
+  if (searchResult.status == "no") return res.send({ ststus: "no", data: "no record in data base" });
   else
     return res.send({
       status: "yes",
@@ -314,15 +286,9 @@ MGrouter.post("/api/deleteData", Helper.authenticateToken, async (req, res) => {
   console.log({ user });
 
   let { collection, indentifierValue, indentifier } = await req.body;
-  let searchResult = await Helper.deleteByParames(
-    userID,
-    collection,
-    indentifier,
-    indentifierValue
-  );
+  let searchResult = await Helper.deleteByParames(userID, collection, indentifier, indentifierValue);
 
-  if (searchResult.status == "no")
-    return res.send({ ststus: "no", data: "no record in data base" });
+  if (searchResult.status == "no") return res.send({ ststus: "no", data: "no record in data base" });
   else
     return res.send({
       status: "yes",
@@ -344,8 +310,7 @@ MGrouter.post("/api/setConfig", Helper.authenticateToken, async (req, res) => {
     return res.send('"*******  no id in request *******"');
   }
 
-  if (validate_data.status == false)
-    return res.send({ status: "no", data: validate_data });
+  if (validate_data.status == false) return res.send({ status: "no", data: validate_data });
 
   configObj.userID = userID;
   Helper.setConfig(configObj, 1, actionHeader)
@@ -356,45 +321,39 @@ MGrouter.post("/api/setConfig", Helper.authenticateToken, async (req, res) => {
     .catch((e) => res.send(e));
 });
 
-MGrouter.post(
-  "/api/setErpConfig",
-  Helper.authenticateToken,
-  async (req, res) => {
-    let userID;
-    const user = await req.user;
-    const actionHeader = req.headers["forcedaction"];
-    console.log({ user });
+MGrouter.post("/api/setErpConfig", Helper.authenticateToken, async (req, res) => {
+  let userID;
+  const user = await req.user;
+  const actionHeader = req.headers["forcedaction"];
+  console.log({ user });
 
-    try {
-      userID = user.fetchedData?.userID ? user.fetchedData.userID : user.userID;
-    } catch (e) {
-      console.log("*******  no id in request *******\n", e);
-    }
-
-    let configObj = await req.body;
-    configObj.userID = userID;
-
-    console.log(configObj);
-    let validate_data = await Validator.VALIDATE_REQUEST_INPUT(configObj, 0);
-
-    if (!validate_data.status)
-      return res.send({ status: "no", data: validate_data.data });
-
-    Helper.setConfig(configObj, 1, actionHeader)
-      .then((searchResult) => {
-        console.log("*** setConfig ***\n ", { searchResult });
-        return res.send(searchResult);
-      })
-      .catch((e) => res.send(e));
+  try {
+    userID = user.fetchedData?.userID ? user.fetchedData.userID : user.userID;
+  } catch (e) {
+    console.log("*******  no id in request *******\n", e);
   }
-);
+
+  let configObj = await req.body;
+  configObj.userID = userID;
+
+  console.log(configObj);
+  let validate_data = await Validator.VALIDATE_REQUEST_INPUT(configObj, 0);
+
+  if (!validate_data.status) return res.send({ status: "no", data: validate_data.data });
+
+  Helper.setConfig(configObj, 1, actionHeader)
+    .then((searchResult) => {
+      console.log("*** setConfig ***\n ", { searchResult });
+      return res.send(searchResult);
+    })
+    .catch((e) => res.send(e));
+});
 
 MGrouter.post("/api/saveDocs", Helper.authenticateToken, async (req, res) => {
   const docsArrey = await req.body;
   console.log("************** /API/saveDocs **********\n ", { docsArrey });
 
-  if (!Array.isArray(docsArrey))
-    return res.send({ status: no, result: "not an array" });
+  if (!Array.isArray(docsArrey)) return res.send({ status: no, result: "not an array" });
   const isBiggerThenOne = docsArrey.length > 1;
 
   const data = new DocData(docsArrey[0]);
@@ -454,32 +413,26 @@ MGrouter.post("/api/saveDocs", Helper.authenticateToken, async (req, res) => {
 //   { timestamps: true, strict: true, strictQuery: false }
 // );
 
-MGrouter.post(
-  "/api/storeTempUrls",
-  Helper.authenticateToken,
-  async (req, res) => {
-    let userID;
-    try {
-      userID = (await req.user.fetchedData.userID)
-        ? req.user.fetchedData.userID
-        : req.user.userID;
-    } catch (e) {
-      console.log("*******  no id in request *******");
-    }
-
-    //if(!userID) return res.send({ status: "no", data:'no user id' });
-
-    DocData.find({ userID: userID })
-      .exec()
-      .then((result) => {
-        // console.log(result);
-        res.send({ status: "yes", data: result });
-      })
-      .catch((e) => {
-        console.log(e);
-        res.send({ status: "no", data: e });
-      });
+MGrouter.post("/api/storeTempUrls", Helper.authenticateToken, async (req, res) => {
+  let userID;
+  try {
+    userID = (await req.user.fetchedData.userID) ? req.user.fetchedData.userID : req.user.userID;
+  } catch (e) {
+    console.log("*******  no id in request *******");
   }
-);
+
+  //if(!userID) return res.send({ status: "no", data:'no user id' });
+
+  DocData.find({ userID: userID })
+    .exec()
+    .then((result) => {
+      // console.log(result);
+      res.send({ status: "yes", data: result });
+    })
+    .catch((e) => {
+      console.log(e);
+      res.send({ status: "no", data: e });
+    });
+});
 
 module.exports = MGrouter;

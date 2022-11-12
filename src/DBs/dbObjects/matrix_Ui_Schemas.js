@@ -190,8 +190,17 @@ const pMtx = new Schema({
   docLimit: { isLimited: Boolean, Amount: Number },
 
   sumLimit: { isLimited: Boolean, Amount: Number },
-  taxDocs: Boolean,
-  Refund: { isAllow: Boolean, isLimited: Boolean, Amount: Number },
+  taxDocs: {
+    isAllow: Boolean,
+    Refund: {
+      isAllow: { type: Boolean, default: true },
+      isLimited: {
+        type: Boolean,
+        default: false,
+      },
+      Amount: Number,
+    },
+  },
   Discount: { isAllow: Boolean, isLimited: Boolean, Amount: Number },
   ObligoPass: { isAllow: Boolean },
   FlagedCastumers: { isAllow: Boolean },
@@ -204,6 +213,7 @@ const config = new Schema(
     DocumentDef: docDef,
     PremissionMtx: pMtx,
     ErpConfig: erpConfig,
+    usserData: users,
   },
   { timestamps: true, strict: true, strictQuery: false }
 );

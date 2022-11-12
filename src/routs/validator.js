@@ -5,7 +5,7 @@ const {
   DocData,
   Users,
   ErpConfig,
-} = require("../DBs/dbObjects/MGschemas");
+} = require("../DBs/dbObjects/matrix_Ui_Schemas");
 const list_of_tables = ["Users", "Config", "ErpConfig", "MtxLog"];
 const column_name_list = ["_id", "userID", "userID", "userID"];
 const action_hash_in_one_instent = {

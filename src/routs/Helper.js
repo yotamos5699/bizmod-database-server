@@ -3,14 +3,7 @@ const Validator = require("./validator");
 const mongoose = require("mongoose");
 
 const jwt = require("jsonwebtoken");
-const {
-  Config,
-  MtxLog,
-  DocData,
-  Users,
-  ErpConfig,
-  BiRows,
-} = require("../DBs/dbObjects/MGschemas");
+const { Config, MtxLog, DocData, Users, ErpConfig, BiRows } = require("../DBs/dbObjects/matrix_Ui_Schemas");
 
 const list_of_tables = ["Users", "Config", "ErpConfig", "MtxLog", "BiRows"];
 const column_name_list = ["_id", "userID", "userID", "userID"];
@@ -125,12 +118,7 @@ const saveRecord = async (NEW_RECORD_DATA, id, tableName, action) => {
     });
 };
 
-const updateRecord = async (
-  NEW_RECORD_DATA_a,
-  reportData,
-  tableName,
-  action
-) => {
+const updateRecord = async (NEW_RECORD_DATA_a, reportData, tableName, action) => {
   console.log("************** update config **************");
   // consol.log("new record data \n", NEW_RECORD_DATA);
   console.table({ reportData });
@@ -153,12 +141,7 @@ const updateRecord = async (
     });
 };
 
-const deleteByParames = async (
-  userID,
-  collection,
-  identifier,
-  identifierValue
-) => {
+const deleteByParames = async (userID, collection, identifier, identifierValue) => {
   const Table = eval(collection);
   //const ColoumnName = eval(identifier)
   return await Table.findOneAndRemove({
@@ -204,12 +187,7 @@ const setConfig = async (userData, numOfTable, forceAction) => {
   const VALIDATE_ACTION = await Validator.VALIDATE_REQUEST_INPUT(userData, 1);
   const action = forceAction != "null" ? forceAction : VALIDATE_ACTION.action;
 
-  return await eval(action_to_function_hash[action])(
-    NEW_RECORD_DATA,
-    VALIDATE_ACTION,
-    tableName,
-    action
-  );
+  return await eval(action_to_function_hash[action])(NEW_RECORD_DATA, VALIDATE_ACTION, tableName, action);
 };
 module.exports.deleteRecord = deleteRecord;
 module.exports.setConfig = setConfig;
