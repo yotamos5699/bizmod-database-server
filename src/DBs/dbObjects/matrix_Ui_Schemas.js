@@ -119,9 +119,10 @@ const config = new Schema(
     ModulsPremission: {
       BiziRoutes: {
         isAllow: Boolean,
-        drivers: {
+        pivotType: String,
+        mtxPreferences: {
           isDefault: { type: Boolean, default: false },
-          AccountKey: Number,
+          pivotKey: Number,
         },
       },
       Messages: {
@@ -154,6 +155,7 @@ const config = new Schema(
         ObligoPass: { isAllow: Boolean },
       },
     },
+
     Reports: {
       defaultReports: {
         castumers: {
@@ -164,7 +166,7 @@ const config = new Schema(
       },
     },
     ErpConfig: {
-      erpName: { type: String, default: "HA", required: true },
+      erpName: { type: String, default: "HA" | "RI", required: true },
       CompanyKey: { type: String, default: tempKey },
       CompanyServer: { type: String, default: tempServer },
       CompanyDbName: { type: String, default: tempDbName },
