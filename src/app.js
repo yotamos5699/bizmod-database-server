@@ -22,6 +22,4 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-app.listen(PORT, (err) =>
-  console.log(`DB server ${err ? " on" : "listening"} port ${PORT}`)
-);
+app.listen(PORT, (err) => console.log(`DB server ${err ? " on" : "listening"} port ${PORT}`));
