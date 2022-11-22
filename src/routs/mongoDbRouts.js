@@ -38,14 +38,22 @@ mongoose
   .then((res) => console.log("conected to mongo...."))
   .catch((e) => console.log(e));
 
-MGrouter.post("/api/loadmatrixes", async (req, res) => {
-  let id = await req.body.userID;
+MGrouter.post("/api/loadmatrixes", Helper.authenticateToken, async (req, res) => {
+  //let id = await req.body.userID;
   let reqAmount = await req.body.amount;
   let amount = reqAmount ? reqAmount : 1;
+  let user = await req.user;
+  console.log({ user });
+  let userID;
+  try {
+    userID = user?.fetchedData?.userID ? user.fetchedData.userID : user.userID;
+  } catch (e) {
+    console.log("*******  no id in request *******");
+  }
 
   console.log("amount ", amount);
-  console.table({ id });
-  MtxLog.find({ userID: id })
+  console.table({ userID });
+  MtxLog.find({ userID: userID })
     .sort({ _id: -1 })
     .then((result) => {
       console.log(result);
