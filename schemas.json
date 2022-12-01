@@ -1,0 +1,627 @@
+[{
+    "name": "DocData",
+    "graph": {
+        "userID": {
+            "required": true
+        },
+        "isStored": {
+            "default": false
+        },
+        "SigStat": {
+            "obj": {},
+            "paths": {
+                "storedDocUrl": {
+                    "enumValues": [],
+                    "regExp": null,
+                    "path": "storedDocUrl",
+                    "instance": "String",
+                    "validators": [],
+                    "getters": [],
+                    "setters": [],
+                    "_presplitPath": ["storedDocUrl"],
+                    "options": {},
+                    "_index": null
+                },
+                "signedDocUrl": {
+                    "enumValues": [],
+                    "regExp": null,
+                    "path": "signedDocUrl",
+                    "instance": "String",
+                    "validators": [],
+                    "getters": [],
+                    "setters": [],
+                    "_presplitPath": ["signedDocUrl"],
+                    "options": {},
+                    "_index": null
+                },
+                "isSigned": {
+                    "path": "isSigned",
+                    "instance": "Boolean",
+                    "validators": [],
+                    "getters": [],
+                    "setters": [],
+                    "_presplitPath": ["isSigned"],
+                    "options": {},
+                    "_index": null
+                },
+                "_id": {
+                    "path": "_id",
+                    "instance": "ObjectID",
+                    "validators": [],
+                    "getters": [],
+                    "setters": [null],
+                    "_presplitPath": ["_id"],
+                    "options": {
+                        "auto": true,
+                        "type": "ObjectId"
+                    },
+                    "_index": null
+                },
+                "updatedAt": {
+                    "path": "updatedAt",
+                    "instance": "Date",
+                    "validators": [],
+                    "getters": [],
+                    "setters": [],
+                    "_presplitPath": ["updatedAt"],
+                    "options": {},
+                    "_index": null
+                },
+                "createdAt": {
+                    "path": "createdAt",
+                    "instance": "Date",
+                    "validators": [],
+                    "getters": [],
+                    "setters": [null, null],
+                    "_presplitPath": ["createdAt"],
+                    "options": {
+                        "immutable": true
+                    },
+                    "_index": null,
+                    "$immutable": true
+                }
+            },
+            "aliases": {},
+            "subpaths": {},
+            "virtuals": {
+                "id": {
+                    "path": "id",
+                    "getters": [null],
+                    "setters": [],
+                    "options": {}
+                }
+            },
+            "singleNestedPaths": {},
+            "nested": {},
+            "inherits": {},
+            "callQueue": [],
+            "_indexes": [],
+            "methods": {},
+            "methodOptions": {},
+            "statics": {},
+            "tree": {
+                "_id": {
+                    "auto": true,
+                    "type": "ObjectId"
+                },
+                "createdAt": {
+                    "immutable": true
+                },
+                "id": {
+                    "path": "id",
+                    "getters": [null],
+                    "setters": [],
+                    "options": {}
+                }
+            },
+            "query": {},
+            "childSchemas": [],
+            "plugins": [{
+                "opts": {
+                    "deduplicate": true
+                }
+            }, {
+                "opts": {
+                    "deduplicate": true
+                }
+            }, {
+                "opts": {
+                    "deduplicate": true
+                }
+            }, {
+                "opts": {
+                    "deduplicate": true
+                }
+            }, {
+                "opts": {
+                    "deduplicate": true
+                }
+            }],
+            "$id": 3,
+            "mapPaths": [],
+            "s": {
+                "hooks": {
+                    "_pres": {},
+                    "_posts": {}
+                }
+            },
+            "_userProvidedOptions": {
+                "timestamps": true,
+                "strict": true,
+                "strictQuery": false
+            },
+            "options": {
+                "timestamps": true,
+                "strict": true,
+                "strictQuery": false,
+                "typeKey": "type",
+                "id": true,
+                "_id": true,
+                "validateBeforeSave": true,
+                "read": null,
+                "shardKey": null,
+                "discriminatorKey": "__t",
+                "autoIndex": null,
+                "minimize": true,
+                "optimisticConcurrency": false,
+                "versionKey": "__v",
+                "capped": false,
+                "bufferCommands": true
+            },
+            "$timestamps": {
+                "createdAt": "createdAt",
+                "updatedAt": "updatedAt"
+            },
+            "$globalPluginsApplied": true
+        },
+        "_id": {
+            "auto": true,
+            "type": "ObjectId"
+        },
+        "createdAt": {
+            "immutable": true
+        },
+        "id": {
+            "path": "id",
+            "getters": [null],
+            "setters": [],
+            "options": {}
+        }
+    }
+}, {
+    "name": "MtxLog",
+    "graph": {
+        "matrixName": {
+            "unique": true
+        },
+        "userID": {
+            "required": true
+        },
+        "isBI": {
+            "default": false
+        },
+        "isProduced": {
+            "default": false
+        },
+        "isInitiated": {
+            "default": false
+        },
+        "counter": {
+            "default": 0
+        },
+        "innerLog": [{
+            "obj": {
+                "userID": {
+                    "required": true
+                }
+            },
+            "paths": {
+                "userID": {
+                    "enumValues": [],
+                    "regExp": null,
+                    "path": "userID",
+                    "instance": "String",
+                    "validators": [{
+                        "message": "Path `{PATH}` is required.",
+                        "type": "required"
+                    }],
+                    "getters": [],
+                    "setters": [],
+                    "_presplitPath": ["userID"],
+                    "options": {
+                        "required": true
+                    },
+                    "_index": null,
+                    "isRequired": true,
+                    "originalRequiredValue": true,
+                    "$isUnderneathDocArray": true
+                },
+                "_id": {
+                    "path": "_id",
+                    "instance": "ObjectID",
+                    "validators": [],
+                    "getters": [],
+                    "setters": [null],
+                    "_presplitPath": ["_id"],
+                    "options": {
+                        "auto": true,
+                        "type": "ObjectId"
+                    },
+                    "_index": null,
+                    "$isUnderneathDocArray": true
+                },
+                "updatedAt": {
+                    "path": "updatedAt",
+                    "instance": "Date",
+                    "validators": [],
+                    "getters": [],
+                    "setters": [],
+                    "_presplitPath": ["updatedAt"],
+                    "options": {},
+                    "_index": null,
+                    "$isUnderneathDocArray": true
+                },
+                "createdAt": {
+                    "path": "createdAt",
+                    "instance": "Date",
+                    "validators": [],
+                    "getters": [],
+                    "setters": [null, null],
+                    "_presplitPath": ["createdAt"],
+                    "options": {
+                        "immutable": true
+                    },
+                    "_index": null,
+                    "$immutable": true,
+                    "$isUnderneathDocArray": true
+                }
+            },
+            "aliases": {},
+            "subpaths": {},
+            "virtuals": {
+                "id": {
+                    "path": "id",
+                    "getters": [null],
+                    "setters": [],
+                    "options": {}
+                }
+            },
+            "singleNestedPaths": {},
+            "nested": {},
+            "inherits": {},
+            "callQueue": [],
+            "_indexes": [],
+            "methods": {},
+            "methodOptions": {},
+            "statics": {},
+            "tree": {
+                "userID": {
+                    "required": true
+                },
+                "_id": {
+                    "auto": true,
+                    "type": "ObjectId"
+                },
+                "createdAt": {
+                    "immutable": true
+                },
+                "id": {
+                    "path": "id",
+                    "getters": [null],
+                    "setters": [],
+                    "options": {}
+                }
+            },
+            "query": {},
+            "childSchemas": [],
+            "plugins": [{
+                "opts": {
+                    "deduplicate": true
+                }
+            }, {
+                "opts": {
+                    "deduplicate": true
+                }
+            }, {
+                "opts": {
+                    "deduplicate": true
+                }
+            }, {
+                "opts": {
+                    "deduplicate": true
+                }
+            }, {
+                "opts": {
+                    "deduplicate": true
+                }
+            }],
+            "$id": 1,
+            "mapPaths": [],
+            "s": {
+                "hooks": {
+                    "_pres": {},
+                    "_posts": {}
+                }
+            },
+            "_userProvidedOptions": {
+                "timestamps": true
+            },
+            "options": {
+                "timestamps": true,
+                "typeKey": "type",
+                "id": true,
+                "_id": true,
+                "validateBeforeSave": true,
+                "read": null,
+                "shardKey": null,
+                "discriminatorKey": "__t",
+                "autoIndex": null,
+                "minimize": true,
+                "optimisticConcurrency": false,
+                "versionKey": "__v",
+                "capped": false,
+                "bufferCommands": true,
+                "strictQuery": true,
+                "strict": true
+            },
+            "$timestamps": {
+                "createdAt": "createdAt",
+                "updatedAt": "updatedAt"
+            },
+            "$globalPluginsApplied": true
+        }],
+        "_id": {
+            "auto": true,
+            "type": "ObjectId"
+        },
+        "createdAt": {
+            "immutable": true
+        },
+        "id": {
+            "path": "id",
+            "getters": [null],
+            "setters": [],
+            "options": {}
+        }
+    }
+}, {
+    "name": "Users",
+    "graph": {
+        "Mail": {
+            "required": true
+        },
+        "userPassword": {
+            "required": true
+        },
+        "isAdmin": {
+            "required": true,
+            "default": true
+        },
+        "isAuthenticated": {
+            "default": false
+        },
+        "otherDetails": {
+            "obj": {},
+            "paths": {
+                "CompenyName": {
+                    "enumValues": [],
+                    "regExp": null,
+                    "path": "CompenyName",
+                    "instance": "String",
+                    "validators": [],
+                    "getters": [],
+                    "setters": [],
+                    "_presplitPath": ["CompenyName"],
+                    "options": {},
+                    "_index": null
+                },
+                "CompanyUTR": {
+                    "enumValues": [],
+                    "regExp": null,
+                    "path": "CompanyUTR",
+                    "instance": "String",
+                    "validators": [],
+                    "getters": [],
+                    "setters": [],
+                    "_presplitPath": ["CompanyUTR"],
+                    "options": {},
+                    "_index": null
+                },
+                "_id": {
+                    "path": "_id",
+                    "instance": "ObjectID",
+                    "validators": [],
+                    "getters": [],
+                    "setters": [null],
+                    "_presplitPath": ["_id"],
+                    "options": {
+                        "auto": true,
+                        "type": "ObjectId"
+                    },
+                    "_index": null
+                }
+            },
+            "aliases": {},
+            "subpaths": {},
+            "virtuals": {
+                "id": {
+                    "path": "id",
+                    "getters": [null],
+                    "setters": [],
+                    "options": {}
+                }
+            },
+            "singleNestedPaths": {},
+            "nested": {},
+            "inherits": {},
+            "callQueue": [],
+            "_indexes": [],
+            "methods": {},
+            "methodOptions": {},
+            "statics": {},
+            "tree": {
+                "_id": {
+                    "auto": true,
+                    "type": "ObjectId"
+                },
+                "id": {
+                    "path": "id",
+                    "getters": [null],
+                    "setters": [],
+                    "options": {}
+                }
+            },
+            "query": {},
+            "childSchemas": [],
+            "plugins": [{
+                "opts": {
+                    "deduplicate": true
+                }
+            }, {
+                "opts": {
+                    "deduplicate": true
+                }
+            }, {
+                "opts": {
+                    "deduplicate": true
+                }
+            }, {
+                "opts": {
+                    "deduplicate": true
+                }
+            }, {
+                "opts": {
+                    "deduplicate": true
+                }
+            }],
+            "$id": 6,
+            "mapPaths": [],
+            "s": {
+                "hooks": {
+                    "_pres": {},
+                    "_posts": {}
+                }
+            },
+            "_userProvidedOptions": {},
+            "options": {
+                "typeKey": "type",
+                "id": true,
+                "_id": true,
+                "validateBeforeSave": true,
+                "read": null,
+                "shardKey": null,
+                "discriminatorKey": "__t",
+                "autoIndex": null,
+                "minimize": true,
+                "optimisticConcurrency": false,
+                "versionKey": "__v",
+                "capped": false,
+                "bufferCommands": true,
+                "strictQuery": true,
+                "strict": true
+            },
+            "$globalPluginsApplied": true
+        },
+        "_id": {
+            "auto": true,
+            "type": "ObjectId"
+        },
+        "createdAt": {
+            "immutable": true
+        },
+        "id": {
+            "path": "id",
+            "getters": [null],
+            "setters": [],
+            "options": {}
+        }
+    }
+}, {
+    "name": "Config",
+    "graph": {
+        "userID": {
+            "required": true
+        },
+        "ModulsPremission": {
+            "BiziRoutes": {
+                "mtxPreferences": {
+                    "isDefault": {
+                        "default": false
+                    }
+                }
+            },
+            "Messages": {
+                "whatsApp": {}
+            }
+        },
+        "mtxConfig": {
+            "documentDef": {
+                "isDefault": {
+                    "default": false
+                }
+            },
+            "docLimit": {},
+            "sumLimit": {},
+            "taxDocs": {
+                "Refund": {
+                    "isAllow": {
+                        "default": true
+                    },
+                    "isLimited": {
+                        "default": false
+                    }
+                },
+                "Discount": {},
+                "ObligoPass": {}
+            }
+        },
+        "Reports": {
+            "defaultReports": {
+                "castumers": {
+                    "sortingKey": {
+                        "default": "קוד מיון"
+                    },
+                    "sortingValue": {
+                        "default": "300"
+                    }
+                },
+                "products": {
+                    "sortingKey": {
+                        "default": "מחסן"
+                    },
+                    "sortingValue": {
+                        "default": "1"
+                    }
+                }
+            }
+        },
+        "ErpConfig": {
+            "erpName": {
+                "default": 0,
+                "required": true
+            },
+            "CompanyKey": {
+                "default": "23e54b4b3e541261140bdeb257538ba11c5104620e61217d5d6735a3c9361a5aac67a7f85278e4e53f3008598d8927f68e89e3e16147c194f96976bdf3075d55"
+            },
+            "CompanyServer": {
+                "default": "lb11.wizcloud.co.il"
+            },
+            "CompanyDbName": {
+                "default": "wizdb2394n5"
+            }
+        },
+        "_id": {
+            "auto": true,
+            "type": "ObjectId"
+        },
+        "createdAt": {
+            "immutable": true
+        },
+        "id": {
+            "path": "id",
+            "getters": [null],
+            "setters": [],
+            "options": {}
+        }
+    }
+}]
