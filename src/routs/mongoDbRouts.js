@@ -60,7 +60,7 @@ MGrouter.post("/api/loadmatrixes", Helper.authenticateToken, async (req, res) =>
       console.log("result.length ssss", result.length);
       res.send({
         status: result.length == 0 ? "no" : "yes",
-        data: result,
+        data: [result],
 
         // result.splice(0, result.length > amount ? amount : result.length),
       });
