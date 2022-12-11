@@ -41,7 +41,7 @@ mongoose
 MGrouter.post("/api/loadmatrixes", Helper.authenticateToken, async (req, res) => {
   //let id = await req.body.userID;
   let reqAmount = await req.body.amount;
-  let amount = reqAmount ? reqAmount : 1;
+  //let amount = reqAmount ? reqAmount : 1;
   let user = await req.user;
   console.log({ user });
   let userID;
@@ -51,16 +51,18 @@ MGrouter.post("/api/loadmatrixes", Helper.authenticateToken, async (req, res) =>
     console.log("*******  no id in request *******");
   }
 
-  console.log("amount ", amount);
+  //console.log("amount ", amount);
   console.table({ userID });
-  MtxLog.find({ userID: userID })
+  MtxLog.findOne({ userID: userID })
     .sort({ _id: -1 })
     .then((result) => {
       console.log(result);
       console.log("result.length ssss", result.length);
       res.send({
         status: result.length == 0 ? "no" : "yes",
-        data: result.splice(0, result.length > amount ? amount : result.length),
+        data: result,
+
+        // result.splice(0, result.length > amount ? amount : result.length),
       });
     })
     .catch((e) => {
