@@ -3,26 +3,18 @@
 */
 
 const express = require("express");
-const MGrouter = express.Router();
+const HArouter = express.Router();
 const mongoose = require("mongoose");
 const Validator = require("./validator");
 const fbHelper = require("../DBs/fbHelper");
 const cors = require("cors");
 const utfZone = "en";
-MGrouter.use(
+HArouter.use(
   cors({
     origin: "*",
   })
 );
-const {
-  MtxLog,
-  DocData,
-  Users,
-  ErpConfig,
-  BiRows,
-  StoredReports,
-  Config,
-} = require("../DBs/dbObjects/matrix_Ui_Schemas");
+const { MtxLog, DocData, Users, BiRows, Config } = require("../DBs/dbObjects/matrix_Ui_Schemas");
 const bodyParser = require("body-parser");
 require("dotenv").config();
 
@@ -30,15 +22,15 @@ const Helper = require("./Helper");
 // exemple process.env.WHATVER_U_WHANT
 const uri = "mongodb+srv://yotamos:linux6926@cluster0.zj6wiy3.mongodb.net/mtxlog?retryWrites=true&w=majority";
 const MGoptions = { useNewUrlParser: true, useUnifiedTopology: true };
-MGrouter.use(express.json());
-MGrouter.use(bodyParser.urlencoded({ extended: true }));
-MGrouter.use(bodyParser.json());
+HArouter.use(express.json());
+HArouter.use(bodyParser.urlencoded({ extended: true }));
+HArouter.use(bodyParser.json());
 mongoose
   .connect(uri, MGoptions)
   .then((res) => console.log("conected to mongo...."))
   .catch((e) => console.log(e));
 
-MGrouter.post("/api/loadmatrixes", Helper.authenticateToken, async (req, res) => {
+HArouter.post("/api/loadmatrixes", Helper.authenticateToken, async (req, res) => {
   //let id = await req.body.userID;
   let reqAmount = await req.body.amount;
   //let amount = reqAmount ? reqAmount : 1;
@@ -71,7 +63,7 @@ MGrouter.post("/api/loadmatrixes", Helper.authenticateToken, async (req, res) =>
     });
 });
 
-MGrouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
+HArouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
   let body = await req.body;
   console.log("body in save matrix !!!", body, "\nbody. isproduced\n", body.isProduced);
   const { matrixID, matrixesData } = body;
@@ -209,7 +201,7 @@ const saveDataForBi = async (reqMtxData, userID) => {
         });
 };
 
-MGrouter.post("/api/loadDocUrls", Helper.authenticateToken, async (req, res) => {
+HArouter.post("/api/loadDocUrls", Helper.authenticateToken, async (req, res) => {
   let userID;
   let user = await req.user;
 
@@ -235,7 +227,7 @@ MGrouter.post("/api/loadDocUrls", Helper.authenticateToken, async (req, res) => 
     });
 });
 
-MGrouter.post("/api/register", async (req, res) => {
+HArouter.post("/api/register", async (req, res) => {
   let body = await req.body;
   let headers = Object.keys(body);
   let newUser = {};
@@ -259,7 +251,7 @@ MGrouter.post("/api/register", async (req, res) => {
     });
 });
 
-MGrouter.post("/api/getdata", Helper.authenticateToken, async (req, res) => {
+HArouter.post("/api/getdata", Helper.authenticateToken, async (req, res) => {
   let { collection, searchParams } = await req.body;
   if (!searchParams) searchParams = {};
   let userID;
@@ -287,7 +279,7 @@ MGrouter.post("/api/getdata", Helper.authenticateToken, async (req, res) => {
   return res.send(searchResult);
 });
 
-MGrouter.post("/api/handleLogin", async (req, res) => {
+HArouter.post("/api/handleLogin", async (req, res) => {
   let searchParams = await req.body;
   let searchResult = await Helper.getData("Users", searchParams);
 
@@ -306,7 +298,7 @@ MGrouter.post("/api/handleLogin", async (req, res) => {
       .catch((err) => res.send({ status: "no", data: err }));
 });
 
-MGrouter.post("/api/deleteData", Helper.authenticateToken, async (req, res) => {
+HArouter.post("/api/deleteData", Helper.authenticateToken, async (req, res) => {
   const user = await req.user;
   const userID = await Helper.extractUserId(req);
 
@@ -327,7 +319,7 @@ MGrouter.post("/api/deleteData", Helper.authenticateToken, async (req, res) => {
       userID: searchResult,
     });
 });
-MGrouter.post("/api/setConfig", Helper.authenticateToken, async (req, res) => {
+HArouter.post("/api/setConfig", Helper.authenticateToken, async (req, res) => {
   const actionHeader = req.headers["forcedaction"];
   const configObj = await req.body;
   const validate_data = await Validator.VALIDATE_REQUEST_INPUT(configObj, 0);
@@ -352,35 +344,7 @@ MGrouter.post("/api/setConfig", Helper.authenticateToken, async (req, res) => {
     .catch((e) => res.send(e));
 });
 
-// MGrouter.post("/api/setErpConfig", Helper.authenticateToken, async (req, res) => {
-//   let userID;
-//   const user = await req.user;
-//   const actionHeader = req.headers["forcedaction"];
-//   console.log({ user });
-
-//   try {
-//     userID = user.fetchedData?.userID ? user.fetchedData.userID : user.userID;
-//   } catch (e) {
-//     console.log("*******  no id in request *******\n", e);
-//   }
-
-//   let configObj = await req.body;
-//   configObj.userID = userID;
-
-//   console.log(configObj);
-//   let validate_data = await Validator.VALIDATE_REQUEST_INPUT(configObj, 0);
-
-//   if (!validate_data.status) return res.send({ status: "no", data: validate_data.data });
-
-//   Helper.setConfig(configObj, 1, actionHeader)
-//     .then((searchResult) => {
-//       console.log("*** setConfig ***\n ", { searchResult });
-//       return res.send(searchResult);
-//     })
-//     .catch((e) => res.send(e));
-// });
-
-MGrouter.post("/api/saveDocs", Helper.authenticateToken, async (req, res) => {
+HArouter.post("/api/saveDocs", Helper.authenticateToken, async (req, res) => {
   const docsArrey = await req.body;
   console.log("************** /API/saveDocs **********\n ", { docsArrey });
 
@@ -412,39 +376,39 @@ MGrouter.post("/api/saveDocs", Helper.authenticateToken, async (req, res) => {
         });
 });
 
-// const SigningStat = new Schema(
-//   {
-//     storedDocUrl: String,
-//     signedDocUrl: String,
-//     isSigned: Boolean,
-//   },
-//   {
-//     timestamps: true,
-//   }
-// );
+HArouter.post("/api/saveDocs222", Helper.authenticateToken, async (req, res) => {
+  const docsArrey = await req.body;
+  console.log("************** /API/saveDocs **********\n ", { docsArrey });
 
-// const docsData = new Schema(
-//   {
-//     userID: { type: String, required: true },
-//     DocumentIssuedStatus: String,
-//     ValueDate: String,
-//     DocumentDefID: Number,
-//     StockID: Number,
-//     DocNumber: Number,
-//     AccountKey: String,
-//     Accountname: String,
-//     TotalCost: Number,
-//     Address: String,
-//     DocumentDetails: String,
-//     isStored: { type: Boolean, default: false },
-//     DocUrl: String,
-//     Action: Number,
-//     SigStat: SigningStat,
-//   },
-//   { timestamps: true, strict: true, strictQuery: false }
-// );
+  if (!Array.isArray(docsArrey)) return res.send({ status: no, result: "not an array" });
+  const isBiggerThenOne = docsArrey.length > 1;
 
-MGrouter.post("/api/storeTempUrls", Helper.authenticateToken, async (req, res) => {
+  const data = new DocData(docsArrey[0]);
+  console.log({ data });
+
+  isBiggerThenOne
+    ? DocData.insertMany(docsArrey)
+        .then((result) => {
+          console.log(result);
+          res.send({ status: "yes", data: result });
+        })
+        .catch((e) => {
+          console.log(e);
+          res.send({ status: "no", data: e });
+        })
+    : data
+        .save()
+        .then((result) => {
+          console.log("!!!!!!!!!! result !!!!!!!!!!!", result);
+          res.send({ status: "yes", data: result });
+        })
+        .catch((e) => {
+          console.log(e);
+          res.send({ status: "no", data: e });
+        });
+});
+
+HArouter.post("/api/storeTempUrls", Helper.authenticateToken, async (req, res) => {
   let userID;
   try {
     userID = (await req.user.fetchedData.userID) ? req.user.fetchedData.userID : req.user.userID;
@@ -466,4 +430,4 @@ MGrouter.post("/api/storeTempUrls", Helper.authenticateToken, async (req, res) =
     });
 });
 
-module.exports = MGrouter;
+module.exports = HArouter;

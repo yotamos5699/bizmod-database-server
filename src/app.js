@@ -5,10 +5,10 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const jwt = require("jsonwebtoken");
-const FBrouter = require("./routs/fireBaseRouts");
-const MGrouter = require("./routs/mongoDbRouts");
-//const { makeSchemasGraph } = require("./DBs/dbObjects/serviceApi");
-
+const FBrouter = require("./routs/fireBaseRouts.js");
+const HArouter = require("./routs/bizHaApi.js");
+const ROrouter = require("./routs/biziRoutApi.js");
+const SIrouter = require("./routs/bizSignApi.js");
 const cors = require(`cors`);
 app.use(express.json());
 app.use(
@@ -18,8 +18,9 @@ app.use(
 );
 
 app.use(FBrouter);
-app.use(MGrouter);
-
+app.use(HArouter);
+app.use(ROrouter);
+app.use(SIrouter);
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
