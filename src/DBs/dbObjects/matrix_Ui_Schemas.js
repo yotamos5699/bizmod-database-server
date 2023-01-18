@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const uniqueValidator = require("mongoose-unique-validator");
+const { string } = require("zod");
 const Schema = mongoose.Schema;
 const tempKey =
   "23e54b4b3e541261140bdeb257538ba11c5104620e61217d5d6735a3c9361a5aac67a7f85278e4e53f3008598d8927f68e89e3e16147c194f96976bdf3075d55";
@@ -158,18 +159,23 @@ const config = new Schema(
         ObligoPass: { isAllow: Boolean },
       },
     },
-
+    // {sortKey:"sort"|"storage",type: "range"|"multi",data:[...theData] }
     Reports: {
       defaultReports: {
         castumers: {
-          sortingKey: { type: String, default: "קוד מיון" },
-          sortingValue: { type: String, default: "300" },
+          sortingKey: { type: String, enum: "sort" },
+          sortingType: { type: String, enum: "range" | "multi" | "single" },
+          sortingValue: { type: Array },
         },
-        products: { sortingKey: { type: String, default: "מחסן" }, sortingValue: { type: String, default: "1" } },
+        products: {
+          sortingKey: { type: String, enum: "sort" | "storage" },
+          sortingType: { type: String, enum: "range" | "multi" | "single" },
+          sortingValue: { type: Array },
+        },
       },
     },
     ErpConfig: {
-      erpName: { type: String, default: "HA" | "RI", required: true },
+      erpName: { type: String, enum: "HA" | "RI", required: true },
       CompanyKey: { type: String, default: tempKey },
       CompanyServer: { type: String, default: tempServer },
       CompanyDbName: { type: String, default: tempDbName },
