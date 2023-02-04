@@ -138,7 +138,8 @@ const config = new Schema(
     },
 
     mtxConfig: {
-      documentDef: { isDefault: { type: Boolean, default: false }, DocumentNumber: String },
+      documentDefault: { isDefault: { type: Boolean, default: false }, Document: String },
+      actionDefault: { isDefault: { type: Boolean, default: false }, Action: String },
       docLimit: { isLimited: Boolean, Amount: Number },
       sumLimit: { isLimited: Boolean, Amount: Number },
       taxDocs: {
@@ -148,7 +149,7 @@ const config = new Schema(
             type: Boolean,
             default: true,
           },
-          isLimited: {
+          isSumLimited: {
             type: Boolean,
             default: false,
           },
@@ -159,29 +160,33 @@ const config = new Schema(
         ObligoPass: { isAllow: Boolean },
       },
     },
-    // {sortKey:"sort"|"storage",type: "range"|"multi",data:[...theData] }
+
     Reports: {
       defaultReports: {
-        castumers: {
-          sortingKey: { type: String, enum: "sort" },
-          sortingType: { type: String, enum: "range" | "multi" | "single" },
-          sortingValue: { type: Array },
-        },
-        products: {
-          sortingKey: { type: String, enum: "sort" | "storage" },
-          sortingType: { type: String, enum: "range" | "multi" | "single" },
-          sortingValue: { type: Array },
-        },
+        castumers: [
+          {
+            sortingKey: { type: String, enum: "sort" },
+            sortingType: { type: String, enum: "range" | "multi" | "single" },
+            sortingValue: { type: Array },
+          },
+        ],
+        products: [
+          {
+            sortingKey: { type: String, enum: "sort" | "storage" },
+            sortingType: { type: String, enum: "range" | "multi" | "single" },
+            sortingValue: { type: Array },
+          },
+        ],
       },
     },
     ErpConfig: {
       erpName: { type: String, enum: "HA" | "RI", required: true },
-      CompanyKey: { type: String, default: tempKey },
-      CompanyServer: { type: String, default: tempServer },
-      CompanyDbName: { type: String, default: tempDbName },
-      CompanyPassword: String,
-      CompanyUserName: String,
-      CompanyNumber: String,
+      HA: {
+        usserPrivetKey: { type: String, default: tempKey },
+        usserServerName: { type: String, default: tempServer },
+        usserDbname: { type: String, default: tempDbName },
+      },
+      RI: { CompanyPassword: String, CompanyUserName: String, CompanyNumber: String },
     },
   },
   { timestamps: true, strict: true, strictQuery: false }
