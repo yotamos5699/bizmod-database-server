@@ -5,6 +5,7 @@ const Schema = mongoose.Schema;
 const tempKey =
   "23e54b4b3e541261140bdeb257538ba11c5104620e61217d5d6735a3c9361a5aac67a7f85278e4e53f3008598d8927f68e89e3e16147c194f96976bdf3075d55";
 // ********************************    MATRIX LOGS       ********************************//
+
 const tempDbName = "wizdb2394n5";
 const tempServer = "lb11.wizcloud.co.il";
 
@@ -123,10 +124,10 @@ const config = new Schema(
     ModulsPremission: {
       BiziRoutes: {
         isAllow: Boolean,
-        pivotType: String,
+        pivotType: "driver" | "zone",
         mtxPreferences: {
           isDefault: { type: Boolean, default: false },
-          pivotKey: Number,
+          pivotKey: Number | String,
         },
       },
       Messages: {
