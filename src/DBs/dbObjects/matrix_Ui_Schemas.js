@@ -181,7 +181,7 @@ const config = new Schema(
       },
     },
     ErpConfig: {
-      erpName: { type: String, enum: "HA" | "RI", required: true },
+      erpName: "HA" | "RI",
       HA: {
         usserPrivetKey: { type: String, default: tempKey },
         usserServerName: { type: String, default: tempServer },
