@@ -100,6 +100,7 @@ HArouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
   const pulledMatrixData = matrixesData?.matrixesData;
   const { userID, inDataBase } = await userVlidation(req);
   if (inDataBase.length == 0) return res.send({ status: "no", data: "user id not found" });
+  if (matrixID == "") return res.send({ status: "no", data: { code: 11001 } });
   let saveObject = {
     status: "yes",
     newName: false,
