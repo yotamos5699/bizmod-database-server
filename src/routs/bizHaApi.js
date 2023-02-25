@@ -19,6 +19,7 @@ const bodyParser = require("body-parser");
 require("dotenv").config();
 
 const Helper = require("./Helper");
+const { async } = require("@firebase/util");
 // exemple process.env.WHATVER_U_WHANT
 const uri = "mongodb+srv://yotamos:linux6926@cluster0.zj6wiy3.mongodb.net/mtxlog?retryWrites=true&w=majority";
 const MGoptions = { useNewUrlParser: true, useUnifiedTopology: true };
@@ -63,10 +64,7 @@ HArouter.post("/api/loadmatrixes", Helper.authenticateToken, async (req, res) =>
     });
 });
 
-HArouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
-  let body = await req.body;
-  console.log("body in save matrix !!!", body, "\nbody. isproduced\n", body.isProduced);
-  const { matrixID, matrixesData } = body;
+const userVlidation = async (req) => {
   let user = await req.user;
   console.log({ user });
   let userID;
@@ -77,7 +75,7 @@ HArouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
   }
 
   console.log(userID);
-  let pulledMatrixData = matrixesData?.matrixesData;
+
   let inDataBase;
   try {
     inDataBase = await Users.find({ _id: userID });
@@ -85,9 +83,27 @@ HArouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
     console.log(e);
     return res.send({ status: "no", data: e });
   }
-  if (inDataBase.length == 0) return res.send({ status: "no", data: "user id not found" });
+  return { userID, inDataBase };
+};
 
-  console.log("matrix name LLLLL", body.matrixName);
+const validateName = async (Name, userID) => {
+  const isExist = await MtxLog.find({ userID: userID, matrixName: Name });
+  if (isExist?.length) return validateName(`${Name} (${crypto.randomUUID().slice(0, 4)})`, userID);
+  else return Name;
+};
+
+HArouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
+  let body = await req.body;
+  const { matrixID, matrixesData } = body;
+  const pulledMatrixData = matrixesData?.matrixesData;
+  const { userID, inDataBase } = await userVlidation(req);
+  if (inDataBase.length == 0) return res.send({ status: "no", data: "user id not found" });
+  let saveObject = {
+    status: "yes",
+    newName: false,
+    data: false,
+  };
+
   let reqMtxData = {
     Date: body.Date ? body.Date : new Date().toLocaleString(utfZone, { timeZone: "Asia/Jerusalem" }),
     matrixName: body.matrixName ? body.matrixName : matrixID,
@@ -99,39 +115,49 @@ HArouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
     matrixesData: pulledMatrixData ? pulledMatrixData : matrixesData,
     matrixesUiData: body.matrixesUiData ? body.matrixesUiData : null,
   };
+  const prevName = reqMtxData["matrixName"];
+  reqMtxData["matrixName"] = await validateName(reqMtxData["matrixName"]);
+  if (prevName != reqMtxData["matrixName"]) {
+    saveObject.status = "no";
+    saveObject.newName = reqMtxData["matrixName"];
+  }
 
-  console.log({ reqMtxData });
   const searchData = await MtxLog.find({ matrixID: matrixID });
-  console.log({ searchData });
-  searchData.length == 0
-    ? new MtxLog(reqMtxData)
-        .save()
-        .then((result) => {
-          console.log("***************************** saving matrix data !!!! ******************************");
-          console.log(result);
-          res.send({ status: "yes", data: result });
-        })
-        .catch((e) => {
-          console.log(e);
-          res.send({ status: "no", data: e });
-        })
-    : MtxLog.updateOne(
-        { matrixID: matrixID },
-        {
-          $set: { ...body, id: searchData[0]._id },
-        }
-      )
-        .then((result) => {
-          console.log("***************************** updating matrix data !!!! ******************************");
-          console.log({ result });
-          res.send({ status: "yes", data: result });
-        })
-        .catch((e) => {
-          console.log(e);
-          res.send({ status: "no", data: e });
-        });
-  console.log("is bi :", body.isBI);
-
+  if (searchData.length == 0) {
+    new MtxLog(reqMtxData)
+      .save()
+      .then((result) => {
+        console.log("***************************** saving matrix data !!!! ******************************");
+        res.send({ status: "yes", data: result, saveStatus: { ...saveObject } });
+      })
+      .catch((e) => {
+        console.log(e);
+        res.send({ status: "no", data: e });
+      });
+  } else {
+    MtxLog.updateOne(
+      { matrixID: matrixID },
+      {
+        $set: { ...body, id: searchData[0]._id },
+      }
+    )
+      .then((result) => {
+        console.log("***************************** updating matrix data !!!! ******************************");
+        console.log({ result });
+        res.send({ status: "yes", data: result, saveStatus: { ...saveObject } });
+      })
+      .catch((e) => {
+        saveObject.data.error = {
+          number: 1,
+          content: "catch block in save matrix, db server",
+        };
+        saveObject.status = "no";
+        saveObject.newName = false;
+        console.log(e);
+        res.send({ status: "no", data: e, saveStatus: { ...saveObject } });
+      });
+    console.log("is bi :", body.isBI);
+  }
   if (body.isBI) saveDataForBi(reqMtxData, userID);
   else console.log("no i needed");
 });
