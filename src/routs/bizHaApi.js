@@ -1,7 +1,7 @@
 /*
 --- extract the user id header extraction to a public function 
 */
-
+const crypto = require("crypto");
 const express = require("express");
 const HArouter = express.Router();
 const mongoose = require("mongoose");
@@ -88,11 +88,13 @@ const userVlidation = async (req) => {
 
 const validateName = async (Name, userID) => {
   const isExist = await MtxLog.find({ userID: userID, matrixName: Name });
+  console.log({ isExist, userID, Name });
   if (isExist?.length) return validateName(`${Name} (${crypto.randomUUID().slice(0, 4)})`, userID);
   else return Name;
 };
 
 HArouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
+  console.log("save matrix in db ..");
   let body = await req.body;
   const { matrixID, matrixesData } = body;
   const pulledMatrixData = matrixesData?.matrixesData;
@@ -116,8 +118,11 @@ HArouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
     matrixesUiData: body.matrixesUiData ? body.matrixesUiData : null,
   };
   const prevName = reqMtxData["matrixName"];
-  reqMtxData["matrixName"] = await validateName(reqMtxData["matrixName"]);
+  const nn = await validateName(reqMtxData["matrixName"], userID);
+  reqMtxData["matrixName"] = nn;
+  console.log({ nn });
   if (prevName != reqMtxData["matrixName"]) {
+    console.log("saving name problem !!", { prevName, reqMtxData });
     saveObject.status = "no";
     saveObject.newName = reqMtxData["matrixName"];
   }
