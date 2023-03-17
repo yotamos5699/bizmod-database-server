@@ -166,15 +166,15 @@ const config = new Schema(
       defaultReports: {
         castumers: [
           {
-            sortingKey: { type: String, enum: "sort" },
-            sortingType: { type: String, enum: "range" | "multi" | "single" },
+            sortingKey: { type: String, enum: ["sort"] },
+            sortingType: { type: String, enum: ["range", "multi", "single"] },
             sortingValue: { type: Array },
           },
         ],
         products: [
           {
-            sortingKey: { type: String, enum: "sort" | "storage" },
-            sortingType: { type: String, enum: "range" | "multi" | "single" },
+            sortingKey: { type: String, enum: ["sort", "storage"] },
+            sortingType: { type: String, enum: ["range", "multi", "single"] },
             sortingValue: { type: Array },
           },
         ],
