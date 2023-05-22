@@ -6,7 +6,7 @@ const express = require("express");
 const HArouter = express.Router();
 const mongoose = require("mongoose");
 const Validator = require("./validator");
-const fbHelper = require("../DBs/fbHelper");
+// const fbHelper = require("../DBs/fbHelper");
 const cors = require("cors");
 const utfZone = "en";
 HArouter.use(
@@ -199,9 +199,7 @@ const saveDataForBi = async (reqMtxData, userID) => {
         AccountKey: data.mainMatrix.AccountKey[rowIndex],
         DocumentID: data.mainMatrix.DocumentID[rowIndex],
         itemKey: data.mainMatrix.itemsHeaders[cellIndex],
-        itemName: data.mainMatrix.itemsNames
-          ? data.mainMatrix.itemsNames[cellIndex]
-          : data.mainMatrix.itemsHeaders[cellIndex],
+        itemName: data.mainMatrix.itemsNames ? data.mainMatrix.itemsNames[cellIndex] : data.mainMatrix.itemsHeaders[cellIndex],
         Quantity: cell,
       };
       biData.push(dataRow);
