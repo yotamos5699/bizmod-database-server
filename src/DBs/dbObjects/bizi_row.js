@@ -1,13 +1,8 @@
 "use strict";
-
-const { boolean, string } = require("zod");
-
 // import { number } from "zod";
-var __importDefault =
-  (this && this.__importDefault) ||
-  function (mod) {
-    return mod && mod.__esModule ? mod : { default: mod };
-  };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BiziRowConfig = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
@@ -19,35 +14,28 @@ const Schema = mongoose_1.default.Schema;
 // // ********************************    MATRIX LOGS       ********************************//
 // const tempDbName = "wizdb2394n5";
 // const tempServer = "lb11.wizcloud.co.il";
-const innerLog = new Schema(
-  {
+const innerLog = new Schema({
     userID: { type: String, required: true },
-  },
-  {
+}, {
     timestamps: true,
-  }
-);
-const biziRowConfig = new Schema(
-  {
+});
+const biziRowConfig = new Schema({
     Date: Number,
     userID: { type: String, required: true },
     headersConfig: [
-      {
-        initialName: String,
-        replacmentName: { type: [String, null], default: null },
-        toShow: { type: Boolean, default: true },
-        colID: { type: String, required: true },
-        position: { type: String, required: true },
-        config: String,
-      },
+        {
+            initialName: String,
+            replacmentName: String,
+            toShow: Boolean,
+            colID: String,
+            position: Number,
+        },
     ],
-  },
-  {
+}, {
     timestamps: true,
     strict: true,
     strictQuery: false,
-  }
-);
+});
 // biziRowConfig.plugin(uniqueValidator);
 //******************************** SIGNETURE PROCESS  *********************************************/
 exports.BiziRowConfig = mongoose_1.default.model("BiziRowConfig", biziRowConfig);

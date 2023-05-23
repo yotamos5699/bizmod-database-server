@@ -1,6 +1,7 @@
 // import { number } from "zod";
 
 import mongoose from "mongoose";
+import { number, string } from "zod";
 // const uniqueValidator = require("mongoose-unique-validator");
 // const { string } = require("zod");
 const Schema = mongoose.Schema;
@@ -27,7 +28,10 @@ const biziRowConfig = new Schema(
     headersConfig: [
       {
         initialName: String,
-        replacmentName: { type: [String, null], default: null },
+        replacmentName: String,
+        toShow: Boolean,
+        colID: String,
+        position: Number,
       },
     ],
   },

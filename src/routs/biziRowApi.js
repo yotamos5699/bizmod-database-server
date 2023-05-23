@@ -31,30 +31,49 @@ const checkIfChanges = (object, body) => {
     delete object.createdAt;
 };
 RowRouter.post("/bizi_row/set_config", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("in set config", req.body);
     const Body = yield req.body;
-    const isExist = yield bizi_row_1.BiziRowConfig.findOne({ userID: Body.userID });
-    if (!validateBody(Body))
-        return res.send({ status: false, data: "data not ok" });
-    if (isExist) {
-        // @ts-ignore
-        const isExistObj = isExist._doc;
-        checkIfChanges(isExist, Body);
-        bizi_row_1.BiziRowConfig.updateOne({ userID: Body.userID }, {
-            $set: Object.assign(Object.assign({}, Body), { id: isExist._id }),
+    const userID = Body.userID;
+    const searchData = yield bizi_row_1.BiziRowConfig.find({ userID: userID });
+    if (searchData.length == 0) {
+        new bizi_row_1.BiziRowConfig(Body)
+            .save()
+            .then((result) => {
+            console.log("***************************** saving row config data !!!! ******************************");
+            res.send({ status: true, data: result });
+        })
+            .catch((e) => {
+            console.log(e);
+            res.send({ status: "no", data: e });
         });
-        return res.send({ status: true, data: "קובץ הגדרות עודכן..." });
     }
     else {
-        const data = new bizi_row_1.BiziRowConfig(Body);
-        return data
-            .save()
-            .then((result) => res.send({ status: true, data: result }))
-            .catch((err) => res.send({ status: false, data: err }));
+        delete Body.userID;
+        bizi_row_1.BiziRowConfig.updateOne({ userID: userID }, {
+            $set: Object.assign(Object.assign({}, Body), { id: searchData[0]._id }),
+        })
+            .then((result) => {
+            console.log("***************************** updating matrix data !!!! ******************************");
+            console.log({ result });
+            res.send({ status: false, data: result });
+        })
+            .catch((e) => {
+            res.send({ status: false, data: e });
+        });
     }
 }));
 RowRouter.post("/bizi_row/get_config", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("in get config ", req.body);
     const { userID } = yield req.body;
     const isExist = yield bizi_row_1.BiziRowConfig.findOne({ userID: userID });
+    if (!isExist)
+        return res.send({ status: false, data: "אין הגדרות בדאטה בייס" });
+    return res.send({ status: true, data: isExist });
+}));
+RowRouter.post("/bizi_row/del_config", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("in get config ", req.body);
+    const { userID } = yield req.body;
+    const isExist = yield bizi_row_1.BiziRowConfig.findOneAndRemove({ userID: userID });
     if (!isExist)
         return res.send({ status: false, data: "אין הגדרות בדאטה בייס" });
     return res.send({ status: true, data: isExist });
