@@ -117,6 +117,7 @@ HArouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
     isInitiated: body.isInitiated ? body.isInitiated : false,
     matrixesData: pulledMatrixData ? pulledMatrixData : matrixesData,
     matrixesUiData: body.matrixesUiData ? body.matrixesUiData : null,
+    isDrivers: body?.isDrivers ? body.isDrivers : false,
   };
   const prevName = reqMtxData["matrixName"];
   const nn = await validateName(reqMtxData["matrixName"], userID);
