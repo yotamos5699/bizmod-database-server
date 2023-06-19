@@ -407,7 +407,7 @@ HArouter.post("/api/saveDocs", Helper.authenticateToken, async (req, res) => {
         });
 });
 
-HArouter.post("/api/saveDocs222", Helper.authenticateToken, async (req, res) => {
+HArouter.post("/api/updateDocs", Helper.authenticateToken, async (req, res) => {
   const docsArrey = await req.body;
   console.log("************** /API/saveDocs **********\n ", { docsArrey });
 

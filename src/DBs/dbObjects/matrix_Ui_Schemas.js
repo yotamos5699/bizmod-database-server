@@ -45,8 +45,9 @@ matrixesData.plugin(uniqueValidator);
 const SigningStat = new Schema(
   {
     storedDocUrl: String,
+    fileKey: String,
     signedDocUrl: String,
-    isSigned: Boolean,
+    isSigned: { type: Boolean, default: false },
   },
   {
     timestamps: true,
