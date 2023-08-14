@@ -29,6 +29,8 @@ const biziRowConfig = new Schema({
             toShow: Boolean,
             colID: String,
             position: Number,
+            showOnMobile: Boolean,
+            isFixed: Boolean,
         },
     ],
 }, {

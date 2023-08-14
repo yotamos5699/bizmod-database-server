@@ -33,6 +33,7 @@ const biziRowConfig = new Schema(
         colID: String,
         position: Number,
         showOnMobile: Boolean,
+        isFixed: Boolean,
       },
     ],
   },
