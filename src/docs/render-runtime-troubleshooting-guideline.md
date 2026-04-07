@@ -19,6 +19,18 @@ The goal is to help another GPT instance diagnose the problem quickly instead of
 - Production start command: `node index.js`
 - Dev start command: `nodemon index.js`
 - Safe Node range on Render: `>=20.19.0 <23.0.0`
+- Preferred explicit Render pin: `.node-version` with `22.22.0`
+
+## Important update about Render Node selection
+
+Current Render docs say to set Node.js with one of these:
+
+- `NODE_VERSION` environment variable
+- `.node-version` file in the project root
+
+`package.json -> engines.node` is still useful for npm warnings and compatibility checks, but do **not** rely on it alone to force Render to use a newer Node version.
+
+This matters especially for older Render services, because Render's default Node version can depend on when the service was first created.
 
 ## Known failure patterns
 
@@ -78,8 +90,7 @@ From highest priority downward:
 
 1. `NODE_VERSION` environment variable in Render
 2. `.node-version`
-3. `.nvmrc`
-4. `package.json -> engines.node`
+3. `package.json -> engines.node` as a compatibility guard, not the primary Render selector
 
 If a deployment still uses the wrong Node version, check for overrides in that order.
 
@@ -116,6 +127,10 @@ Use this exact `engines` value:
 
 - `>=20.19.0 <23.0.0`
 
+Also add this file to the repo root:
+
+- `.node-version` containing `22.22.0`
+
 Keep these scripts:
 
 - `start`: `node index.js`
@@ -123,10 +138,11 @@ Keep these scripts:
 
 After changing versions:
 
-1. commit both `package.json` and `package-lock.json`
+1. commit `.node-version`, `package.json`, and `package-lock.json`
 2. push to GitHub
 3. in Render, redeploy with **Clear build cache**
-4. confirm logs show a Node 20.x or 22.x runtime
+4. confirm logs show a Node 22.x runtime, or at minimum a Node 20.19+ runtime
+5. if logs still show the old startup command or old runtime, verify the service is deploying the latest branch/commit and that automatic deploys were not disabled by a previous "deploy specific commit"
 
 ## Things not to assume too early
 
@@ -194,3 +210,4 @@ If Render shows Node 25 and JWT / `buffer-equal-constant-time` crashes, add an u
 For this repo, the safe answer is:
 
 - `"engines": { "node": ">=20.19.0 <23.0.0" }`
+- `.node-version` => `22.22.0`
