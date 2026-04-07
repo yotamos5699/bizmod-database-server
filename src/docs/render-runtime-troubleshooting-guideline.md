@@ -51,6 +51,32 @@ Fix:
 - raise the lower bound in `package.json -> engines.node`
 - for this repo, use `>=20.19.0 <23.0.0`
 
+### 1b) Error: `npm ERR! ERESOLVE could not resolve` involving `mongoose-unique-validator`
+
+Example:
+
+- install step fails during `npm i`
+- log mentions:
+  - `While resolving: mongoose-unique-validator@3.1.0`
+  - `Found: mongoose@9.4.1`
+  - `peer mongoose@"^6.0.0" from mongoose-unique-validator@3.1.0`
+
+Meaning:
+
+- the repo still references an old `mongoose-unique-validator` release that only supports Mongoose 6
+- Render is correctly using modern Node now, so the next blocker becomes this peer dependency conflict
+
+Fix:
+
+- remove `mongoose-unique-validator` from this repo and keep Mongo's native unique indexes
+- remove the plugin calls from local schema files
+- sync both `package-lock.json` and `pnpm-lock.yaml`
+
+Notes:
+
+- newer `mongoose-unique-validator` releases support Mongoose 8/9, but the repo is CommonJS and the simplest safe fix here is to remove the plugin entirely
+- this plugin is a UX layer for nicer duplicate-key validation messages, not the actual uniqueness guarantee
+
 ### 2) Error in `buffer-equal-constant-time` / `SlowBuffer.prototype.equal`
 
 Example:
@@ -117,6 +143,8 @@ When troubleshooting this class of issue, do the following in order:
 - `mongoose@9.4.1` requires Node `>=20.19.0`
 - `mongodb@7.1.1` requires Node `>=20.19.0`
 - `jsonwebtoken@8.5.1` can fail on Node 25 because of older transitive dependencies
+- `mongoose-unique-validator@3.1.0` conflicts with `mongoose@9.4.1` during `npm i`
+- this repo can safely remove `mongoose-unique-validator`; unique indexes remain defined in the schemas
 - This repo should deploy on **Node 20 or 22**, not 14 and not 25
 - `package-lock.json` must be kept in sync with `package.json`
 - This repo currently uses `npm i` on Render, so `package-lock.json` matters
