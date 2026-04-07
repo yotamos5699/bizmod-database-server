@@ -12,16 +12,24 @@ const utfZone = "en";
 HArouter.use(
   cors({
     origin: "*",
-  })
+  }),
 );
-const { MtxLog, DocData, Users, BiRows, Config } = require("../DBs/dbObjects/matrix_Ui_Schemas");
+const {
+  MtxLog,
+  DocData,
+  Users,
+  BiRows,
+  Config,
+} = require("../DBs/dbObjects/matrix_Ui_Schemas");
 const bodyParser = require("body-parser");
 require("dotenv").config();
 
 const Helper = require("./Helper");
 const { async } = require("@firebase/util");
 // exemple process.env.WHATVER_U_WHANT
-const uri = "mongodb+srv://yotamos:linux6926@cluster0.zj6wiy3.mongodb.net/mtxlog?retryWrites=true&w=majority";
+
+const uri = "mongodb+srv://matrix:linux6926@main.tybk4aa.mongodb.net/?appName=main";
+// const uri = "mongodb+srv://yotamos:linux6926@cluster0.zj6wiy3.mongodb.net/mtxlog?retryWrites=true&w=majority";
 const MGoptions = { useNewUrlParser: true, useUnifiedTopology: true };
 HArouter.use(express.json());
 HArouter.use(bodyParser.urlencoded({ extended: true }));
@@ -47,7 +55,6 @@ HArouter.post("/api/loadmatrixes", Helper.authenticateToken, async (req, res) =>
   //console.log("amount ", amount);
   console.table({ userID });
   MtxLog.findOne({ userID: userID })
-    .sort({ _id: -1 })
     .then((result) => {
       console.log(result);
       console.log("result.length ssss", result.length);
@@ -89,7 +96,8 @@ const userVlidation = async (req) => {
 const validateName = async (Name, userID) => {
   const isExist = await MtxLog.find({ userID: userID, matrixName: Name });
   console.log({ isExist, userID, Name });
-  if (isExist?.length) return validateName(`${Name} (${crypto.randomUUID().slice(0, 4)})`, userID);
+  if (isExist?.length)
+    return validateName(`${Name} (${crypto.randomUUID().slice(0, 4)})`, userID);
   else return Name;
 };
 
@@ -99,7 +107,8 @@ HArouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
   const { matrixID, matrixesData } = body;
   const pulledMatrixData = matrixesData?.matrixesData;
   const { userID, inDataBase } = await userVlidation(req);
-  if (inDataBase.length == 0) return res.send({ status: "no", data: "user id not found" });
+  if (inDataBase.length == 0)
+    return res.send({ status: "no", data: "user id not found" });
   if (matrixID == "") return res.send({ status: "no", data: { code: 11001 } });
   let saveObject = {
     status: "yes",
@@ -108,7 +117,9 @@ HArouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
   };
 
   let reqMtxData = {
-    Date: body.Date ? body.Date : new Date().toLocaleString(utfZone, { timeZone: "Asia/Jerusalem" }),
+    Date: body.Date
+      ? body.Date
+      : new Date().toLocaleString(utfZone, { timeZone: "Asia/Jerusalem" }),
     matrixName: body.matrixName ? body.matrixName : matrixID,
     matrixID: matrixID,
     userID: userID,
@@ -134,7 +145,9 @@ HArouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
     new MtxLog(reqMtxData)
       .save()
       .then((result) => {
-        console.log("***************************** saving matrix data !!!! ******************************");
+        console.log(
+          "***************************** saving matrix data !!!! ******************************",
+        );
         res.send({ status: "yes", data: result, saveStatus: { ...saveObject } });
       })
       .catch((e) => {
@@ -146,10 +159,12 @@ HArouter.post("/api/saveMatrix", Helper.authenticateToken, async (req, res) => {
       { matrixID: matrixID },
       {
         $set: { ...body, id: searchData[0]._id },
-      }
+      },
     )
       .then((result) => {
-        console.log("***************************** updating matrix data !!!! ******************************");
+        console.log(
+          "***************************** updating matrix data !!!! ******************************",
+        );
         console.log({ result });
         res.send({ status: "yes", data: result, saveStatus: { ...saveObject } });
       })
@@ -200,7 +215,9 @@ const saveDataForBi = async (reqMtxData, userID) => {
         AccountKey: data.mainMatrix.AccountKey[rowIndex],
         DocumentID: data.mainMatrix.DocumentID[rowIndex],
         itemKey: data.mainMatrix.itemsHeaders[cellIndex],
-        itemName: data.mainMatrix.itemsNames ? data.mainMatrix.itemsNames[cellIndex] : data.mainMatrix.itemsHeaders[cellIndex],
+        itemName: data.mainMatrix.itemsNames
+          ? data.mainMatrix.itemsNames[cellIndex]
+          : data.mainMatrix.itemsHeaders[cellIndex],
         Quantity: cell,
       };
       biData.push(dataRow);
@@ -314,7 +331,8 @@ HArouter.post("/api/handleLogin", async (req, res) => {
   let searchParams = await req.body;
   let searchResult = await Helper.getData("Users", searchParams);
 
-  if (searchResult.status == "no") return res.send({ ststus: "no", data: "no record in data base" });
+  if (searchResult.status == "no")
+    return res.send({ ststus: "no", data: "no record in data base" });
   else
     await Config.findOne({ userID: searchResult.data[0]._id })
 
@@ -338,11 +356,15 @@ HArouter.post("/api/deleteData", Helper.authenticateToken, async (req, res) => {
 
   let { collection, indentifierValue, indentifier } = await req.body;
 
-  let searchResult = await Helper.deleteByParames(userID, collection, indentifier, indentifierValue).catch((err) =>
-    res.send({ status: "no", data: err })
-  );
+  let searchResult = await Helper.deleteByParames(
+    userID,
+    collection,
+    indentifier,
+    indentifierValue,
+  ).catch((err) => res.send({ status: "no", data: err }));
 
-  if (searchResult.status == "no") return res.send({ ststus: "no", data: "no record in data base" });
+  if (searchResult.status == "no")
+    return res.send({ ststus: "no", data: "no record in data base" });
   else
     return res.send({
       status: "yes",
@@ -364,7 +386,8 @@ HArouter.post("/api/setConfig", Helper.authenticateToken, async (req, res) => {
     return res.send('"*******  no id in request *******"');
   }
 
-  if (validate_data.status == false) return res.send({ status: "no", data: validate_data });
+  if (validate_data.status == false)
+    return res.send({ status: "no", data: validate_data });
 
   configObj.userID = userID;
   Helper.setConfig(configObj, "Config", actionHeader)
@@ -442,7 +465,9 @@ HArouter.post("/api/updateDocs", Helper.authenticateToken, async (req, res) => {
 HArouter.post("/api/storeTempUrls", Helper.authenticateToken, async (req, res) => {
   let userID;
   try {
-    userID = (await req.user.fetchedData.userID) ? req.user.fetchedData.userID : req.user.userID;
+    userID = (await req.user.fetchedData.userID)
+      ? req.user.fetchedData.userID
+      : req.user.userID;
   } catch (e) {
     console.log("*******  no id in request *******");
   }
