@@ -35,7 +35,7 @@ HArouter.use(bodyParser.urlencoded({ extended: true }));
 HArouter.use(bodyParser.json());
 mongoose
   .connect(uri)
-  .then((res) => console.log("conected to mongo...."))
+  .then((res) => console.log("conected to mongo....."))
   .catch((e) => console.log(e));
 
 HArouter.post("/api/loadmatrixes", Helper.authenticateToken, async (req, res) => {
