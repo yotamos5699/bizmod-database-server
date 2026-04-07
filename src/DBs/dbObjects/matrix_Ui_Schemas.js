@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const uniqueValidator = require("mongoose-unique-validator");
-const { string, boolean } = require("zod");
 const Schema = mongoose.Schema;
 const tempKey =
   "23e54b4b3e541261140bdeb257538ba11c5104620e61217d5d6735a3c9361a5aac67a7f85278e4e53f3008598d8927f68e89e3e16147c194f96976bdf3075d55";
@@ -15,7 +14,7 @@ const innerLog = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const matrixesData = new Schema(
@@ -37,7 +36,7 @@ const matrixesData = new Schema(
     timestamps: true,
     strict: true,
     strictQuery: false,
-  }
+  },
 );
 matrixesData.plugin(uniqueValidator);
 //******************************** SIGNETURE PROCESS  *********************************************/
@@ -53,7 +52,7 @@ const SigningStat = new Schema(
     timestamps: true,
     strict: true,
     strictQuery: false,
-  }
+  },
 );
 
 const docsData = new Schema(
@@ -74,7 +73,7 @@ const docsData = new Schema(
     Action: Number,
     SigStat: SigningStat,
   },
-  { timestamps: true, strict: true, strictQuery: false }
+  { timestamps: true, strict: true, strictQuery: false },
 );
 
 const biRows = new Schema(
@@ -87,7 +86,7 @@ const biRows = new Schema(
     itemName: String,
     Quantity: Number,
   },
-  { timestamps: true, strict: true, strictQuery: false }
+  { timestamps: true, strict: true, strictQuery: false },
 );
 // ************************************* users Schema ******************************** ////
 
@@ -112,7 +111,7 @@ const users = new Schema(
     isAuthenticated: { type: Boolean, default: false },
     otherDetails: UserData,
   },
-  { timestamps: true, strict: true, strictQuery: false }
+  { timestamps: true, strict: true, strictQuery: false },
 );
 
 //************************************** Config ^*************************************//
@@ -126,10 +125,10 @@ const config = new Schema(
     ModulsPremission: {
       BiziRoutes: {
         isAllow: Boolean,
-        pivotType: "driver" | "zone",
+        pivotType: { type: String, enum: ["driver", "zone"] },
         mtxPreferences: {
           isDefault: { type: Boolean, default: false },
-          pivotKey: Number | String,
+          pivotKey: { type: Schema.Types.Mixed },
         },
       },
       Messages: {
@@ -183,7 +182,7 @@ const config = new Schema(
       },
     },
     ErpConfig: {
-      erpName: "HA" | "RI",
+      erpName: { type: String, enum: ["HA", "RI"] },
       HA: {
         usserPrivetKey: { type: String, default: tempKey },
         usserServerName: { type: String, default: tempServer },
@@ -192,7 +191,7 @@ const config = new Schema(
       RI: { CompanyPassword: String, CompanyUserName: String, CompanyNumber: String },
     },
   },
-  { timestamps: true, strict: true, strictQuery: false }
+  { timestamps: true, strict: true, strictQuery: false },
 );
 
 // validate name
@@ -206,7 +205,7 @@ const storedReports = new mongoose.Schema(
     ID: String,
     Report: Object,
   },
-  { timestamps: true, strict: true, strictQuery: false }
+  { timestamps: true, strict: true, strictQuery: false },
 );
 
 const StoredReports = mongoose.model("StoredReports", storedReports);

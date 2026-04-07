@@ -30,12 +30,11 @@ const { async } = require("@firebase/util");
 
 const uri = "mongodb+srv://matrix:linux6926@main.tybk4aa.mongodb.net/?appName=main";
 // const uri = "mongodb+srv://yotamos:linux6926@cluster0.zj6wiy3.mongodb.net/mtxlog?retryWrites=true&w=majority";
-const MGoptions = { useNewUrlParser: true, useUnifiedTopology: true };
 HArouter.use(express.json());
 HArouter.use(bodyParser.urlencoded({ extended: true }));
 HArouter.use(bodyParser.json());
 mongoose
-  .connect(uri, MGoptions)
+  .connect(uri)
   .then((res) => console.log("conected to mongo...."))
   .catch((e) => console.log(e));
 
